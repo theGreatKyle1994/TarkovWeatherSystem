@@ -16,7 +16,7 @@ export enum WeatherType {
   SUNNY = "SUNNY",
 }
 
-export const weatherDBModel = {
+export const weatherDBDefaults = {
   weatherName: "",
   weatherLength: -1,
   weatherLeft: -1,

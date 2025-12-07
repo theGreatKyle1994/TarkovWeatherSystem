@@ -2,8 +2,12 @@
 import weightsConfig from "../../config/weightsConfig.json";
 
 // General Imports
-import { weatherDBModel, WeatherType, type WeatherDB } from "../models/weather";
-import { seasonDBModel, SeasonType, type SeasonDB } from "../models/seasons";
+import {
+  type WeatherDB,
+  weatherDBDefaults,
+  WeatherType,
+} from "../models/weather";
+import { type SeasonDB, seasonDBDefaults, SeasonType } from "../models/seasons";
 import path from "path";
 import fs from "fs/promises";
 
@@ -26,24 +30,12 @@ function checkSeasonDB(dbSeason: SeasonDB, logger: ILogger): void {
 function checkWeatherDB(dbWeather: WeatherDB, logger: ILogger): void {
   let isError: boolean = false;
 
-  for (let key in weatherDBModel) {
-    if (!Object.keys(dbWeather).includes(key)) {
-      isError = true;
-      logger.error(`[TWS] "${key}" is missing in weather.json.`);
-      dbWeather = {
-        ...dbWeather,
-        [key]: weatherDBModel[key],
-      };
-    }
-  }
-
-  for (let key in dbWeather) {
-    if (!Object.keys(weatherDBModel).includes(key)) {
-      isError = true;
-      logger.error(`[TWS] Invalid key: "${key}" found in weather.json.`);
-      delete dbWeather[key];
-    }
-  }
+  isError = validateConfigKeys<WeatherDB, typeof weatherDBDefaults>(
+    dbWeather,
+    weatherDBDefaults,
+    "weather",
+    logger
+  );
 
   if (
     !Object.values(WeatherType).includes(dbWeather.weatherName as WeatherType)
@@ -70,22 +62,51 @@ function checkWeatherDB(dbWeather: WeatherDB, logger: ILogger): void {
     dbWeather.weatherLeft = dbWeather.weatherLength;
   }
 
-  if (isError) repairDB(dbWeather, "weather", logger);
+  if (isError) repairDB<WeatherDB>(dbWeather, "weather", logger);
 }
 
-async function repairDB(
-  db: SeasonDB | WeatherDB,
-  filName: string,
+function validateConfigKeys<configType, modelType>(
+  config: configType,
+  model: modelType,
+  fileName: string,
+  logger: ILogger
+): boolean {
+  let isError: boolean = false;
+  // Replace missing keys
+  for (let key in model) {
+    if (!Object.keys(config).includes(key)) {
+      isError = true;
+      logger.error(`[TWS] "${key}" is missing in ${fileName}.json.`);
+      config = {
+        ...config,
+        [key]: model[key],
+      };
+    }
+  }
+  // Delete unknown keys
+  for (let key in config) {
+    if (!Object.keys(model).includes(key)) {
+      isError = true;
+      logger.error(`[TWS] Invalid key: "${key}" found in ${fileName}.json.`);
+      delete config[key];
+    }
+  }
+  return isError;
+}
+
+async function repairDB<T>(
+  db: T,
+  fileName: string,
   logger: ILogger
 ): Promise<void> {
-  logger.warning(`[TWS] Repairing ${filName}.json...`);
+  logger.warning(`[TWS] Repairing ${fileName}.json...`);
   try {
     await fs.writeFile(
-      path.join(__dirname, "../db", `${filName}.json`),
+      path.join(__dirname, "../../config", `${fileName}.json`),
       JSON.stringify(db, null, 2)
     );
-    logger.success(`[TWS] Successfully updated ${filName}.json.`);
+    logger.success(`[TWS] Successfully updated ${fileName}.json.`);
   } catch {
-    logger.error(`[TWS] Could not write to /src/db/${filName}.json.`);
+    logger.error(`[TWS] Could not write to /config/${fileName}.json.`);
   }
 }

@@ -19,7 +19,7 @@ export enum SeasonType {
   STORM = "STORM",
 }
 
-export const seasonDBModel = {
+export const seasonDBDefaults = {
   seasonType: -1,
   seasonName: "",
   seasonLength: -1,
