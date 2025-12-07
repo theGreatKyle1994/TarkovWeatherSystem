@@ -17,9 +17,9 @@ export enum WeatherType {
 }
 
 export const weatherDBDefaults = {
-  weatherName: "",
-  weatherLength: -1,
-  weatherLeft: -1,
+  weatherName: "SUNNY",
+  weatherLength: 30,
+  weatherLeft: 30,
 };
 
 interface WeatherLayouts {

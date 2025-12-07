@@ -51,6 +51,8 @@
     "AUTUMN_LATE": 10,
     "SPRING_EARLY": 10
   },
+  "minSeasonDuration": 14,
+  "maxSeasonDuration": 14,
   "minWeatherDuration": 30,
   "maxWeatherDuration": 120
 }

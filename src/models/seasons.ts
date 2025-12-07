@@ -4,12 +4,12 @@ import type { Season } from "@spt/models/enums/Season";
 
 export interface SeasonDB {
   seasonType: Season;
-  seasonName: SeasonType;
+  seasonName: SeasonName;
   seasonLength: number;
   seasonLeft: number;
 }
 
-export enum SeasonType {
+export enum SeasonName {
   SUMMER = "SUMMER",
   AUTUMN = "AUTUMN",
   WINTER = "WINTER",
@@ -20,10 +20,10 @@ export enum SeasonType {
 }
 
 export const seasonDBDefaults = {
-  seasonType: -1,
-  seasonName: "",
-  seasonLength: -1,
-  seasonLeft: -1,
+  seasonType: 0,
+  seasonName: "SUMMER",
+  seasonLength: 14,
+  seasonLeft: 14,
 };
 
 export const seasonDates: ISeasonDateTimes[] = [

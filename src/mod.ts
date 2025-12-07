@@ -4,6 +4,7 @@ import modConfig from "../config/config.json";
 // General Imports
 import { DependencyContainer } from "tsyringe";
 import WeatherSystem from "./weatherSystem";
+import { checkModConfig } from "./validation/validationUtilities";
 
 // SPT Imports
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
@@ -31,14 +32,20 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
       ConfigTypes.WEATHER
     );
 
-    if (modConfig.enable)
+    // Validate mod config is good before initializing mod
+    checkModConfig(modConfig, this.logger);
+
+    // Initialize core mod
+    if (modConfig.enable) {
       this.WeatherSystem.enable(this.weatherSeasonValues, this.logger);
-    else
+    } else {
       this.logger.log(
         "[TWS] Mod has been disabled. Check config.",
         LogTextColor.YELLOW
       );
-
+    }
+    
+    // Add routes if mod is active
     if (modConfig.enable) {
       this.staticRouterModService.registerStaticRouter(
         "[TWS] /client/game/keepalive",
