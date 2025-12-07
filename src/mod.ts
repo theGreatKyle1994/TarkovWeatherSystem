@@ -7,12 +7,12 @@ import WeatherSystem from "./weatherSystem";
 
 // SPT Imports
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
+import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { StaticRouterModService } from "@spt/services/mod/staticRouter/StaticRouterModService";
 import type { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
 import type { ConfigServer } from "@spt/servers/ConfigServer";
 import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
-import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 
 class TarkovWeatherSystem implements IPreSptLoadMod {
   public logger: ILogger;
@@ -31,14 +31,13 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
       ConfigTypes.WEATHER
     );
 
-    if (modConfig.enable) {
+    if (modConfig.enable)
       this.WeatherSystem.enable(this.weatherSeasonValues, this.logger);
-    } else {
+    else
       this.logger.log(
         "[TWS] Mod has been disabled. Check config.",
         LogTextColor.YELLOW
       );
-    }
 
     if (modConfig.enable) {
       this.staticRouterModService.registerStaticRouter(

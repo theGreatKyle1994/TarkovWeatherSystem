@@ -1,6 +1,27 @@
 // SPT Imports
 import type { ISeasonalValues } from "@spt/models/spt/config/IWeatherConfig";
 
+export interface WeatherDB {
+  weatherName: WeatherType;
+  weatherLength: number;
+  weatherLeft: number;
+}
+
+export enum WeatherType {
+  DEFAULT = "DEFAULT",
+  STORMY = "STORMY",
+  FOGGY = "FOGGY",
+  WINDY = "WINDY",
+  MISTY = "MISTY",
+  SUNNY = "SUNNY",
+}
+
+export const weatherDBModel = {
+  weatherName: "",
+  weatherLength: -1,
+  weatherLeft: -1,
+};
+
 interface WeatherLayouts {
   DEFAULT: ISeasonalValues;
   STORMY: ISeasonalValues;

@@ -6,40 +6,40 @@ import weightsConfig from "../config/weightsConfig.json";
 
 // General Imports
 import { seasonDates } from "./models/seasons";
-import { weatherLayouts } from "./models/weather";
+import { weatherLayouts, type WeatherDB } from "./models/weather";
+import type { SeasonDB } from "./models/seasons";
+import { checkConfigs } from "./validation/validationUtilities";
 
 // SPT Imports
-import { Season } from "@spt/models/enums/Season";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 
 class WeatherSystem {
-  public dbWeather: typeof dbWeatherConfig = dbWeatherConfig;
-  public dbSeason: typeof dbSeasonConfig = dbSeasonConfig;
+  public dbWeather = dbWeatherConfig as WeatherDB;
+  public dbSeason = dbSeasonConfig as SeasonDB;
   public logger: ILogger;
 
   public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
     this.logger = logger;
     this.logger.log(`[TWS] Loading...`, LogTextColor.GREEN);
 
-    if (modConfig.enableSeasons) {
+    checkConfigs(this.dbSeason, this.dbWeather, this.logger);
+
+    if (modConfig.enableSeasons)
       this.logger.log(
         `[TWS] Season is: ${this.dbSeason.seasonName}`,
         LogTextColor.CYAN
       );
-    } else {
-      this.logger.log("[TWS] Season is disabled.", LogTextColor.YELLOW);
-    }
+    else this.logger.log("[TWS] Season is disabled.", LogTextColor.YELLOW);
 
-    if (modConfig.enableWeather) {
+    if (modConfig.enableWeather)
       this.logger.log(
         `[TWS] Weather is: ${this.dbWeather.weatherName}`,
         LogTextColor.CYAN
       );
-    } else {
-      this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
-    }
+    else this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
+
     weatherSeasonValues = {
       ...weatherSeasonValues,
       seasonDates: seasonDates,
@@ -85,9 +85,7 @@ class WeatherSystem {
     let total = 0;
     for (let key in seasonWeights) {
       total += seasonWeights[key];
-      if (total >= cursor) {
-        return key;
-      }
+      if (total >= cursor) return key;
     }
   }
 }

@@ -1,5 +1,30 @@
 // SPT Imports
 import type { ISeasonDateTimes } from "@spt/models/spt/config/IWeatherConfig";
+import type { Season } from "@spt/models/enums/Season";
+
+export interface SeasonDB {
+  seasonType: Season;
+  seasonName: SeasonType;
+  seasonLength: number;
+  seasonLeft: number;
+}
+
+export enum SeasonType {
+  SUMMER = "SUMMER",
+  AUTUMN = "AUTUMN",
+  WINTER = "WINTER",
+  SPRING = "SPRING",
+  AUTUMN_LATE = "AUTUMN_LATE",
+  SPRING_EARLY = "SPRING_EARLY",
+  STORM = "STORM",
+}
+
+export const seasonDBModel = {
+  seasonType: -1,
+  seasonName: "",
+  seasonLength: -1,
+  seasonLeft: -1,
+};
 
 export const seasonDates: ISeasonDateTimes[] = [
   {
