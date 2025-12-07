@@ -3,7 +3,7 @@ import modConfig from "../config/config.json";
 
 // General Imports
 import { DependencyContainer } from "tsyringe";
-import Utils from "./utils";
+import WeatherSystem from "./weatherSystem";
 
 // SPT Imports
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
@@ -18,7 +18,7 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
   public logger: ILogger;
   public configServer: ConfigServer;
   public staticRouterModService: StaticRouterModService;
-  public utils = new Utils();
+  public WeatherSystem = new WeatherSystem();
   public weatherSeasonValues: IWeatherConfig;
 
   public preSptLoad(container: DependencyContainer): void {
@@ -32,7 +32,7 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
     );
 
     if (modConfig.enable) {
-      this.utils.enable(this.weatherSeasonValues, this.logger);
+      this.WeatherSystem.enable(this.weatherSeasonValues, this.logger);
     } else {
       this.logger.log(
         "[TWS] Mod has been disabled. Check config.",
@@ -41,7 +41,6 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
     }
 
     if (modConfig.enable) {
-      // Set season and weather during client/game/keepalive callback
       this.staticRouterModService.registerStaticRouter(
         "[TWS] /client/game/keepalive",
         [
@@ -49,10 +48,10 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
             url: "/client/game/keepalive",
             action: async (_url, _, __, output) => {
               // if (modConfig.enableWeather) {
-              //   this.utils.setWeather(this.weatherSeasonValues);
+              //   this.WeatherSystem.setWeather(this.weatherSeasonValues);
               // }
               // if (modConfig.enableSeasons) {
-              //   this.utils.setSeason(this.weatherSeasonValues);
+              //   this.WeatherSystem.setSeason(this.weatherSeasonValues);
               // }
               return output;
             },
@@ -60,7 +59,6 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
         ],
         "[TWS] /client/game/keepalive"
       );
-      // Set season during client/match/local/end callback
       modConfig.enableSeasons &&
         this.staticRouterModService.registerStaticRouter(
           "[TWS] /client/match/local/end",
@@ -68,14 +66,13 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
             {
               url: "/client/match/local/end",
               action: async (_url, _, __, output) => {
-                // this.utils.setSeason(this.weatherSeasonValues);
+                // this.WeatherSystem.setSeason(this.weatherSeasonValues);
                 return output;
               },
             },
           ],
           "[TWS] /client/match/local/end"
         );
-      // Set weather during client/weather callback
       modConfig.enableWeather &&
         this.staticRouterModService.registerStaticRouter(
           "[TWS] /client/weather",
@@ -83,7 +80,9 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
             {
               url: "/client/weather",
               action: async (_url, _, __, output) => {
-                this.utils.setWeather(this.weatherSeasonValues);
+                if (this.WeatherSystem.dbWeather.weatherLeft <= 0) {
+                  this.WeatherSystem.setWeather(this.weatherSeasonValues);
+                }
                 return output;
               },
             },

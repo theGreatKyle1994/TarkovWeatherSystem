@@ -1,3 +1,5 @@
 {
-  "weatherName": "SUNNY"
+  "weatherName": "SUNNY",
+  "weatherLength": 120,
+  "weatherLeft": 120
 }

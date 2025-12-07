@@ -14,7 +14,7 @@ import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 
-class Utils {
+class WeatherSystem {
   public dbWeather: typeof dbWeatherConfig = dbWeatherConfig;
   public dbSeason: typeof dbSeasonConfig = dbSeasonConfig;
   public logger: ILogger;
@@ -92,4 +92,4 @@ class Utils {
   }
 }
 
-export default Utils;
+export default WeatherSystem;

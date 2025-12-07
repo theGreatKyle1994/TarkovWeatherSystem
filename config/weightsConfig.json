@@ -50,5 +50,7 @@
     "SPRING": 10,
     "AUTUMN_LATE": 10,
     "SPRING_EARLY": 10
-  }
+  },
+  "minWeatherDuration": 30,
+  "maxWeatherDuration": 120
 }
