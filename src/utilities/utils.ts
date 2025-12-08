@@ -15,7 +15,6 @@ export async function writeConfig<ConfigType>(
       path.join(__dirname, "../../config/", `${fileName}.json`),
       JSON.stringify(config, null, 2)
     );
-    logger.success(`[TWS] Successfully updated ${fileName}.json.`);
   } catch {
     logger.error(`[TWS] Could not write to /config/${fileName}.json.`);
   }
