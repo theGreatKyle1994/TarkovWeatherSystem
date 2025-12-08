@@ -58,16 +58,6 @@ class WeatherSystem {
     } else {
       this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
     }
-    this.logger.warning(
-      `${JSON.stringify(weatherSeasonValues.overrideSeason, null, 2)}`
-    );
-    this.logger.warning(
-      `${JSON.stringify(
-        weatherSeasonValues.weather.seasonValues.default,
-        null,
-        2
-      )}`
-    );
     // End loading
     this.logger.log(`[TWS] Loading finished!`, LogTextColor.GREEN);
   }
