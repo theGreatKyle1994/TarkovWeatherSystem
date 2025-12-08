@@ -1,5 +1,6 @@
 {
   "enable": true,
   "enableSeasons": true,
-  "enableWeather": true
+  "enableWeather": true,
+  "randomSeasons": false
 }

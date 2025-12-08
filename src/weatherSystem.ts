@@ -5,7 +5,7 @@ import dbSeasonConfig from "../config/season.json";
 import weightsConfig from "../config/weightsConfig.json";
 
 // General Imports
-import { seasonDates, SeasonName } from "./models/seasons";
+import { seasonDates, SeasonName, seasonOrder } from "./models/seasons";
 import {
   weatherLayouts,
   WeatherName,
@@ -60,7 +60,19 @@ class WeatherSystem {
   public setSeason = (seasonValues: IWeatherConfig) => {
     // Check if season change is needed
     if (this.dbSeason.seasonLeft <= 0) {
-      const seasonChoice = this.getRandomSeason();
+      let seasonChoice: string = "";
+
+      // Use random seasons
+      if (modConfig.randomSeasons) seasonChoice = this.getRandomSeason();
+      // Determine next season in queue
+      else {
+        const seasonIndex: number = seasonOrder.indexOf(
+          this.dbSeason.seasonName
+        );
+        if (seasonIndex === seasonOrder.length - 1)
+          seasonChoice = seasonOrder[0] as SeasonName;
+        else seasonChoice = seasonOrder[seasonIndex + 1] as SeasonName;
+      }
 
       // Set local season database
       this.dbSeason.seasonName = SeasonName[seasonChoice];

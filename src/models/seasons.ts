@@ -26,6 +26,15 @@ export enum SeasonName {
   STORM = "STORM",
 }
 
+export const seasonOrder: string[] = [
+  "SUMMER",
+  "AUTUMN",
+  "AUTUMN_LATE",
+  "WINTER",
+  "SPRING_EARLY",
+  "SPRING",
+];
+
 export const seasonDBDefaults = {
   seasonName: "SUMMER",
   seasonLength: 14,
