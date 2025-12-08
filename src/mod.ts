@@ -47,27 +47,28 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
 
     // Add routes if mod is active
     if (modConfig.enable) {
-      this.staticRouterModService.registerStaticRouter(
-        "[TWS] /client/game/keepalive",
-        [
-          {
-            url: "/client/game/keepalive",
-            action: async (_url, _, __, output) => {
-              //  this.WeatherSystem.setWeather(this.weatherSeasonValues);
-              //  this.WeatherSystem.setSeason(this.weatherSeasonValues);
-              return output;
-            },
-          },
-        ],
-        "[TWS] /client/game/keepalive"
-      );
+      // this.staticRouterModService.registerStaticRouter(
+      //   "[TWS] /client/game/keepalive",
+      //   [
+      //     {
+      //       url: "/client/game/keepalive",
+      //       action: async (_url, _, __, output) => {
+      //          this.WeatherSystem.checkWeather(this.weatherSeasonValues);
+      //          this.WeatherSystem.checkSeason(this.weatherSeasonValues);
+      //         return output;
+      //       },
+      //     },
+      //   ],
+      //   "[TWS] /client/game/keepalive"
+      // );
       this.staticRouterModService.registerStaticRouter(
         "[TWS] /client/match/local/end",
         [
           {
             url: "/client/match/local/end",
             action: async (_url, _, __, output) => {
-              // this.WeatherSystem.setSeason(this.weatherSeasonValues);
+              this.WeatherSystem.decrementWeather(this.weatherSeasonValues);
+              this.WeatherSystem.decrementSeason(this.weatherSeasonValues);
               return output;
             },
           },
@@ -80,9 +81,8 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
           {
             url: "/client/weather",
             action: async (_url, _, __, output) => {
-              if (this.WeatherSystem.dbWeather.weatherLeft <= 0) {
-                this.WeatherSystem.setWeather(this.weatherSeasonValues);
-              }
+              this.WeatherSystem.setSeason(this.weatherSeasonValues);
+              this.WeatherSystem.setWeather(this.weatherSeasonValues);
               return output;
             },
           },
