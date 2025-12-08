@@ -24,12 +24,6 @@ export enum WeatherName {
   SUNNY = "SUNNY",
 }
 
-export const weatherDBDefaults = {
-  weatherName: "SUNNY",
-  weatherLength: 3,
-  weatherLeft: 3,
-};
-
 interface WeatherLayouts {
   DEFAULT: ISeasonalValues;
   STORMY: ISeasonalValues;
@@ -38,6 +32,12 @@ interface WeatherLayouts {
   MISTY: ISeasonalValues;
   SUNNY: ISeasonalValues;
 }
+
+export const weatherDBDefaults = {
+  weatherName: "SUNNY",
+  weatherLength: 3,
+  weatherLeft: 3,
+};
 
 export const weatherLayouts: WeatherLayouts = {
   DEFAULT: {

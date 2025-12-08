@@ -31,22 +31,11 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
     this.weatherSeasonValues = this.configServer.getConfig<IWeatherConfig>(
       ConfigTypes.WEATHER
     );
-
     // Validate mod config is good before initializing mod
     checkModConfig(modConfig, this.logger);
-
     // Initialize core mod
     if (modConfig.enable) {
       this.WeatherSystem.enable(this.weatherSeasonValues, this.logger);
-    } else {
-      this.logger.log(
-        "[TWS] Mod has been disabled. Check config.",
-        LogTextColor.YELLOW
-      );
-    }
-
-    // Add routes if mod is active
-    if (modConfig.enable) {
       this.staticRouterModService.registerStaticRouter(
         "[TWS] /client/match/local/end",
         [
@@ -74,6 +63,11 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
           },
         ],
         "[TWS] /client/weather"
+      );
+    } else {
+      this.logger.log(
+        "[TWS] Mod has been disabled. Check config.",
+        LogTextColor.YELLOW
       );
     }
   }
