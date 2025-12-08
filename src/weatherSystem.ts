@@ -39,11 +39,20 @@ class WeatherSystem {
       // Setup season dates to allow any season
       weatherSeasonValues.seasonDates = seasonDates;
       this.setSeason(weatherSeasonValues);
+      this.logger.logWithColor(
+        `[TWS] ${this.dbSeason.seasonLeft} raid(s) left for ${this.dbSeason.seasonName}`,
+        LogTextColor.CYAN
+      );
     } else this.logger.log("[TWS] Season is disabled.", LogTextColor.YELLOW);
 
     // Setup weather
-    if (modConfig.enableWeather) this.setWeather(weatherSeasonValues);
-    else this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
+    if (modConfig.enableWeather) {
+      this.setWeather(weatherSeasonValues);
+      this.logger.logWithColor(
+        `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,
+        LogTextColor.CYAN
+      );
+    } else this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
 
     this.logger.log(`[TWS] Loading finished!`, LogTextColor.GREEN);
   }
@@ -122,7 +131,7 @@ class WeatherSystem {
     if (this.dbSeason.seasonLeft > 0) {
       this.dbSeason.seasonLeft--;
       this.logger.logWithColor(
-        `[TWS] ${this.dbSeason.seasonLeft} raids left for ${this.dbSeason.seasonName}`,
+        `[TWS] ${this.dbSeason.seasonLeft} raid(s) left for ${this.dbSeason.seasonName}`,
         LogTextColor.CYAN
       );
     } else this.setSeason(seasonValues);
@@ -134,7 +143,7 @@ class WeatherSystem {
     if (this.dbWeather.weatherLeft > 0) {
       this.dbWeather.weatherLeft--;
       this.logger.logWithColor(
-        `[TWS] ${this.dbWeather.weatherLeft} raids left for ${this.dbWeather.weatherName}`,
+        `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,
         LogTextColor.CYAN
       );
     } else this.setSeason(weatherValues);
