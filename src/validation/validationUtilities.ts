@@ -50,7 +50,7 @@ function checkSeasonDB(dbSeason: SeasonDB, logger: ILogger): void {
         dbSeason.seasonLength <= 0 ? "seasonLength" : "seasonLeft"
       } must be ${dbSeason.seasonLength <= 0 ? ">" : ">="} 0.`
     );
-    dbSeason.seasonLength = weightsConfig.minSeasonDuration;
+    dbSeason.seasonLength = seasonDBDefaults.seasonLength;
     dbSeason.seasonLeft = dbSeason.seasonLength;
   } else if (dbSeason.seasonLeft > dbSeason.seasonLength) {
     isError = true;
@@ -91,7 +91,7 @@ function checkWeatherDB(dbWeather: WeatherDB, logger: ILogger): void {
         dbWeather.weatherLength <= 0 ? "weatherLength" : "weatherLeft"
       } must be ${dbWeather.weatherLength <= 0 ? ">" : ">="} 0.`
     );
-    dbWeather.weatherLength = weightsConfig.minWeatherDuration;
+    dbWeather.weatherLength = weatherDBDefaults.weatherLength;
     dbWeather.weatherLeft = dbWeather.weatherLength;
   } else if (dbWeather.weatherLeft > dbWeather.weatherLength) {
     isError = true;
@@ -113,7 +113,7 @@ export function checkModConfig(modConfig: ModConfig, logger: ILogger): void {
     "config",
     logger
   );
-  
+
   // Repair config issues
   if (isError) repairConfig<ModConfig>(modConfig, "config", logger);
 }
