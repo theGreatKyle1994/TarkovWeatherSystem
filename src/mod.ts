@@ -65,7 +65,8 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
           {
             url: "/fika/raid/create",
             action: async (_, info, ___, output) => {
-              // const data = JSON.parse(info) as { serverId: string };
+              const data = info as { serverId: string };
+              this.logger.warning(JSON.stringify(data));
               // this.WeatherSystem.fikaID = data.serverId;
               return output;
             },
