@@ -14,7 +14,7 @@ import {
 } from "./models/weather";
 import type { SeasonDB, SeasonWeights } from "./models/seasons";
 import { checkConfigs } from "./validation/validationUtilities";
-import { writeConfig, chooseWeight } from "./utilities/utils";
+import { writeConfig, chooseWeight, loadConfigs } from "./utilities/utils";
 
 // SPT Imports
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
@@ -47,6 +47,8 @@ class WeatherSystem {
 
     // Setup weather
     if (modConfig.enableWeather) {
+      // Load custom weather configs
+      loadConfigs("customWeather", this.logger);
       this.setWeather(weatherSeasonValues);
       this.logger.logWithColor(
         `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,

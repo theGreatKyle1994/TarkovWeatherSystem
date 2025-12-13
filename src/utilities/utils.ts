@@ -31,9 +31,55 @@ export function chooseWeight(weights: Object): string {
   // Determine random weather choice
   const cursor = Math.ceil(Math.random() * totalWeight);
   let total = 0;
-  
+
   for (let key in weights) {
     total += weights[key];
     if (total >= cursor) return key;
   }
+}
+
+export async function loadConfigs(
+  subPath: string,
+  logger: ILogger
+): Promise<string[]> {
+  let filePaths: string[] = [];
+  let configs: string[] = [];
+
+  // Grab all file paths in config/subPath
+  try {
+    filePaths = await fs.readdir(
+      path.join(__dirname, `../../config/${subPath}`),
+      {
+        encoding: "utf-8",
+        recursive: true,
+        withFileTypes: false,
+      }
+    );
+  } catch (err) {
+    logger.warning(`[TWS] Error reading /config/${subPath} directory.`);
+  }
+
+  // Remove example.json from list
+  filePaths = filePaths.filter((path) => path !== "example.json");
+
+  // Index variale for error tracking
+  let index: number = -1;
+  // Gather all configs from path array
+  try {
+    for (let filePath of filePaths) {
+      index++;
+      configs.push(
+        JSON.parse(
+          await fs.readFile(
+            path.join(__dirname, `../../config/${subPath}/${filePath}`),
+            { encoding: "utf-8" }
+          )
+        )
+      );
+    }
+  } catch (err) {
+    logger.warning(`[TWS] Problem reading file: ${filePaths[index]}`);
+  }
+
+  return configs;
 }

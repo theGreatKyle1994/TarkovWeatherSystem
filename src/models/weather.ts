@@ -39,6 +39,51 @@ export const weatherDBDefaults: WeatherDB = {
   weatherLeft: 3,
 };
 
+export const weatherDefault: ISeasonalValues = {
+  clouds: {
+    values: [0],
+    weights: [1],
+  },
+  windSpeed: {
+    values: [0],
+    weights: [1],
+  },
+  windDirection: {
+    values: [1],
+    weights: [1],
+  },
+  windGustiness: {
+    min: 0,
+    max: 0,
+  },
+  rain: {
+    values: [0],
+    weights: [1],
+  },
+  rainIntensity: {
+    min: 0,
+    max: 0,
+  },
+  fog: {
+    values: [0],
+    weights: [1],
+  },
+  temp: {
+    day: {
+      min: 9,
+      max: 32,
+    },
+    night: {
+      min: 2,
+      max: 16,
+    },
+  },
+  pressure: {
+    min: 760,
+    max: 780,
+  },
+};
+
 export const weatherLayouts: WeatherLayouts = {
   DEFAULT: {
     clouds: {

@@ -42,8 +42,8 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
     // Validate mod config is good before initializing mod
     checkModConfig(modConfig, this.logger);
 
+    // Initialize core mod
     if (modConfig.enable) {
-      // Initialize core mod
       this.WeatherSystem.enable(this.weatherSeasonValues, this.logger);
       // Add clients to list for future use
       this.staticRouterModService.registerStaticRouter(
