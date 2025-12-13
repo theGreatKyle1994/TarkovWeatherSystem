@@ -1,9 +1,5 @@
 // General Imports
-import {
-  type WeatherDB,
-  weatherDBDefaults,
-  WeatherName,
-} from "../models/weather";
+import { type WeatherDB, weatherDBDefaults } from "../models/weather";
 import { writeConfig } from "../utilities/utils";
 import { type SeasonDB, seasonDBDefaults, SeasonName } from "../models/seasons";
 import { type ModConfig, modConfigDefaults } from "../models/mod";
@@ -71,16 +67,6 @@ function checkWeatherDB(dbWeather: WeatherDB, logger: ILogger): void {
   );
 
   // Run config validation checks
-  if (
-    !Object.values(WeatherName).includes(dbWeather.weatherName as WeatherName)
-  ) {
-    isError = true;
-    logger.error(
-      `[TWS] "${dbWeather.weatherName}" is not a valid weather type.`
-    );
-    dbWeather.weatherName = WeatherName.SUNNY;
-  }
-
   if (dbWeather.weatherLength <= 0 || dbWeather.weatherLeft < 0) {
     isError = true;
     logger.error(
