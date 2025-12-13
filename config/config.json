@@ -1,8 +1,8 @@
 {
-  "enable": true,
-  "enableSeasons": true,
-  "enableWeather": true,
-  "useSeasonLength": true,
-  "useWeatherLength": true,
-  "randomSeasons": false
+    "enable": true,
+    "enableSeasons": true,
+    "enableWeather": true,
+    "useSeasonLength": true,
+    "useWeatherLength": true,
+    "randomSeasons": false
 }

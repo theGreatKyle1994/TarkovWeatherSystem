@@ -15,204 +15,209 @@ import { writeConfig, chooseWeight, loadConfigs } from "./utilities/utils";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type {
-  ISeasonalValues,
-  IWeatherConfig,
+    ISeasonalValues,
+    IWeatherConfig,
 } from "@spt/models/spt/config/IWeatherConfig";
 import { Season } from "@spt/models/enums/Season";
 
 class WeatherSystem {
-  public dbWeather = dbWeatherConfig as WeatherDB;
-  public dbSeason = dbSeasonConfig as SeasonDB;
-  public weatherConfigs: WeatherConfigPattern[] = [];
-  public logger: ILogger;
+    public dbWeather = dbWeatherConfig as WeatherDB;
+    public dbSeason = dbSeasonConfig as SeasonDB;
+    public weatherConfigs: WeatherConfigPattern[] = [];
+    public weatherTypes: string[] = [];
+    public logger: ILogger;
 
-  public async enable(
-    weatherSeasonValues: IWeatherConfig,
-    logger: ILogger
-  ): Promise<void> {
-    this.logger = logger;
-    this.logger.log(`[TWS] Loading...`, LogTextColor.GREEN);
+    public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
+        this.logger = logger;
+        this.logger.log(`[TWS] Loading...`, LogTextColor.GREEN);
 
-    // Validate db configs
-    checkConfigs(this.dbSeason, this.dbWeather, this.logger);
+        // Validate db configs
+        checkConfigs(this.dbSeason, this.dbWeather, this.logger);
 
-    // Setup season
-    if (modConfig.enableSeasons) {
-      // Setup season dates to allow any season
-      weatherSeasonValues.seasonDates = seasonDates;
+        // Setup season
+        if (modConfig.enableSeasons) this.enableSeasons(weatherSeasonValues);
+        else this.logger.log("[TWS] Season is disabled.", LogTextColor.YELLOW);
 
-      // Set initial season
-      this.setSeason(weatherSeasonValues);
-      this.logger.logWithColor(
-        `[TWS] ${this.dbSeason.seasonLeft} raid(s) left for ${this.dbSeason.seasonName}`,
-        LogTextColor.CYAN
-      );
-    } else this.logger.log("[TWS] Season is disabled.", LogTextColor.YELLOW);
+        // Setup weather
+        if (modConfig.enableWeather) this.enableWeather(weatherSeasonValues);
+        else this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
 
-    // Setup weather
-    if (modConfig.enableWeather) {
-      // Load default weather configs
-      this.weatherConfigs = await loadConfigs<WeatherConfigPattern>(
-        "defaultWeather",
-        this.logger
-      );
+        this.logger.log(`[TWS] Loading finished!`, LogTextColor.GREEN);
+    }
 
-      // Grab initial weather count
-      let customWeatherLength: number = this.weatherConfigs.length;
-      this.logger.logWithColor(
-        `[TWS] Loaded ${customWeatherLength} default weather pattern(s).`,
-        LogTextColor.CYAN
-      );
+    public async enableSeasons(seasonValues: IWeatherConfig) {
+        // Setup season dates to allow any season
+        seasonValues.seasonDates = seasonDates;
 
-      // Load custom weather configs
-      this.weatherConfigs = await loadConfigs<WeatherConfigPattern>(
-        "customWeather",
-        this.logger,
-        this.weatherConfigs
-      );
-
-      // Find difference for custom config length
-      customWeatherLength -= this.weatherConfigs.length;
-      this.logger.logWithColor(
-        `[TWS] Loaded ${Math.abs(
-          customWeatherLength
-        )} custom weather pattern(s).`,
-        LogTextColor.CYAN
-      );
-
-      this.logger.warning(JSON.stringify(this.weatherConfigs, null, 2));
-
-      // Set initial weather
-      this.setWeather(weatherSeasonValues);
-      this.logger.logWithColor(
-        `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,
-        LogTextColor.CYAN
-      );
-    } else this.logger.log("[TWS] Weather is disabled.", LogTextColor.YELLOW);
-
-    this.logger.log(`[TWS] Loading finished!`, LogTextColor.GREEN);
-  }
-
-  public setSeason = (seasonValues: IWeatherConfig) => {
-    // Check if season change is needed
-    if (this.dbSeason.seasonLeft <= 0) {
-      let seasonChoice: string = "";
-
-      // Use random seasons
-      if (modConfig.randomSeasons) seasonChoice = this.getRandomSeason();
-      // Determine next season in queue
-      else {
-        const seasonIndex: number = seasonOrder.indexOf(
-          this.dbSeason.seasonName
+        // Set initial season
+        this.setSeason(seasonValues);
+        this.logger.logWithColor(
+            `[TWS] ${this.dbSeason.seasonLeft} raid(s) left for ${this.dbSeason.seasonName}`,
+            LogTextColor.CYAN
         );
-        if (seasonIndex === seasonOrder.length - 1)
-          seasonChoice = seasonOrder[0] as SeasonName;
-        else seasonChoice = seasonOrder[seasonIndex + 1] as SeasonName;
-      }
-
-      // Set local season database
-      this.dbSeason.seasonName = SeasonName[seasonChoice];
-      this.dbSeason.seasonLeft = this.dbSeason.seasonLength;
-
-      // Set chosen season to game database
-      seasonValues.overrideSeason = Season[this.dbSeason.seasonName];
-      this.logger.log(
-        `[TWS] The season changed to: ${this.dbSeason.seasonName}`,
-        LogTextColor.BLUE
-      );
-
-      writeConfig(this.dbSeason, "season", this.logger);
-    } else {
-      // Enforce current values
-      seasonValues.overrideSeason = Season[this.dbSeason.seasonName];
-
-      this.logger.log(
-        `[TWS] Season is: ${this.dbSeason.seasonName}`,
-        LogTextColor.CYAN
-      );
     }
-  };
 
-  public setWeather = (weatherValues: IWeatherConfig) => {
-    // Check if weather change is needed
-    if (this.dbWeather.weatherLeft <= 0) {
-      // Generate random weather choice
-      const weatherChoice = this.getRandomWeather();
+    public async enableWeather(weatherValues: IWeatherConfig) {
+        // Load default weather configs
+        this.weatherConfigs = await loadConfigs<WeatherConfigPattern>(
+            "defaultWeather",
+            this.logger
+        );
 
-      // Set local weather database
-      this.dbWeather.weatherName = weatherChoice;
-      this.dbWeather.weatherLeft = this.dbWeather.weatherLength;
+        // Grab initial weather count
+        let customWeatherLength: number = this.weatherConfigs.length;
+        this.logger.logWithColor(
+            `[TWS] Loaded ${customWeatherLength} default weather pattern(s).`,
+            LogTextColor.CYAN
+        );
 
-      // Set chosen weather to game database
-      weatherValues.weather.seasonValues["default"] =
-        this.findWeather(weatherChoice);
+        // Load custom weather configs
+        this.weatherConfigs = await loadConfigs<WeatherConfigPattern>(
+            "customWeather",
+            this.logger,
+            this.weatherConfigs
+        );
 
-      this.logger.log(
-        `[TWS] The weather changed to: ${this.dbWeather.weatherName}`,
-        LogTextColor.BLUE
-      );
-      writeConfig(this.dbWeather, "weather", this.logger);
-    } else {
-      // Enforce current values
-      weatherValues.weather.seasonValues.default = this.findWeather(
-        this.dbWeather.weatherName
-      );
+        // Grab all weather names, default and custom
+        for (let { name } of this.weatherConfigs) this.weatherTypes.push(name);
 
-      this.logger.log(
-        `[TWS] Weather is: ${this.dbWeather.weatherName}`,
-        LogTextColor.CYAN
-      );
+        // Find difference for custom config length
+        customWeatherLength -= this.weatherConfigs.length;
+        this.logger.logWithColor(
+            `[TWS] Loaded ${Math.abs(
+                customWeatherLength
+            )} custom weather pattern(s).`,
+            LogTextColor.CYAN
+        );
+
+        // Set initial weather
+        this.setWeather(weatherValues);
+        this.logger.logWithColor(
+            `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,
+            LogTextColor.CYAN
+        );
     }
-  };
 
-  public getRandomSeason(): string {
-    const seasonWeights: SeasonWeights = weightsConfig.seasonWeights;
-    return chooseWeight(seasonWeights);
-  }
+    public setSeason(seasonValues: IWeatherConfig) {
+        // Check if season change is needed
+        if (this.dbSeason.seasonLeft <= 0) {
+            let seasonChoice: string = "";
 
-  public getRandomWeather(): string {
-    const weatherWeights =
-      weightsConfig.weatherWeights[this.dbSeason.seasonName];
-    return chooseWeight(weatherWeights);
-  }
+            // Use random seasons
+            if (modConfig.randomSeasons) seasonChoice = this.getRandomSeason();
+            // Determine next season in queue
+            else {
+                const seasonIndex: number = seasonOrder.indexOf(
+                    this.dbSeason.seasonName
+                );
+                if (seasonIndex === seasonOrder.length - 1)
+                    seasonChoice = seasonOrder[0] as SeasonName;
+                else seasonChoice = seasonOrder[seasonIndex + 1] as SeasonName;
+            }
 
-  public findWeather(target: string): ISeasonalValues {
-    for (let i = 0; i < this.weatherConfigs.length; i++)
-      if (this.weatherConfigs[i].name === target)
-        return this.weatherConfigs[i].weather;
-  }
+            // Set local season database
+            this.dbSeason.seasonName = SeasonName[seasonChoice];
+            this.dbSeason.seasonLeft = this.dbSeason.seasonLength;
 
-  public decrementSeason(seasonValues: IWeatherConfig): void {
-    // sessionID check to only decrement by 1 instead of for each player
-    if (
-      this.dbSeason.seasonLeft > 0
-      // && modConfig.fikaAdjustmentID === this.fikaID
-    ) {
-      this.dbSeason.seasonLeft--;
-      this.logger.logWithColor(
-        `[TWS] ${this.dbSeason.seasonLeft} raid(s) left for ${this.dbSeason.seasonName}`,
-        LogTextColor.CYAN
-      );
-    } else this.setSeason(seasonValues);
+            // Set chosen season to game database
+            seasonValues.overrideSeason = Season[this.dbSeason.seasonName];
+            this.logger.log(
+                `[TWS] The season changed to: ${this.dbSeason.seasonName}`,
+                LogTextColor.BLUE
+            );
 
-    writeConfig(this.dbSeason, "season", this.logger);
-  }
+            writeConfig(this.dbSeason, "season", this.logger);
+        } else {
+            // Enforce current values
+            seasonValues.overrideSeason = Season[this.dbSeason.seasonName];
 
-  public decrementWeather(weatherValues: IWeatherConfig): void {
-    // sessionID check to only decrement by 1 instead of for each player
-    if (
-      this.dbWeather.weatherLeft > 0
-      // && modConfig.fikaAdjustmentID === this.fikaID
-    ) {
-      this.dbWeather.weatherLeft--;
-      this.logger.logWithColor(
-        `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,
-        LogTextColor.CYAN
-      );
-    } else this.setSeason(weatherValues);
+            this.logger.log(
+                `[TWS] Season is: ${this.dbSeason.seasonName}`,
+                LogTextColor.CYAN
+            );
+        }
+    }
 
-    writeConfig(this.dbWeather, "weather", this.logger);
-  }
+    public setWeather(weatherValues: IWeatherConfig) {
+        // Check if weather change is needed
+        if (this.dbWeather.weatherLeft <= 0) {
+            // Generate random weather choice
+            const weatherChoice = this.getRandomWeather();
+
+            // Set local weather database
+            this.dbWeather.weatherName = weatherChoice;
+            this.dbWeather.weatherLeft = this.dbWeather.weatherLength;
+
+            // Set chosen weather to game database
+            weatherValues.weather.seasonValues["default"] =
+                this.findWeather(weatherChoice);
+
+            this.logger.log(
+                `[TWS] The weather changed to: ${this.dbWeather.weatherName}`,
+                LogTextColor.BLUE
+            );
+            writeConfig(this.dbWeather, "weather", this.logger);
+        } else {
+            // Enforce current values
+            weatherValues.weather.seasonValues.default = this.findWeather(
+                this.dbWeather.weatherName
+            );
+
+            this.logger.log(
+                `[TWS] Weather is: ${this.dbWeather.weatherName}`,
+                LogTextColor.CYAN
+            );
+        }
+    }
+
+    public getRandomSeason(): string {
+        const seasonWeights: SeasonWeights = weightsConfig.seasonWeights;
+        return chooseWeight(seasonWeights);
+    }
+
+    public getRandomWeather(): string {
+        const weatherWeights =
+            weightsConfig.weatherWeights[this.dbSeason.seasonName];
+        return chooseWeight(weatherWeights);
+    }
+
+    public findWeather(target: string): ISeasonalValues {
+        for (let i = 0; i < this.weatherConfigs.length; i++)
+            if (this.weatherConfigs[i].name === target)
+                return this.weatherConfigs[i].weather;
+    }
+
+    public decrementSeason(seasonValues: IWeatherConfig): void {
+        // sessionID check to only decrement by 1 instead of for each player
+        if (
+            this.dbSeason.seasonLeft > 0
+            // && modConfig.fikaAdjustmentID === this.fikaID
+        ) {
+            this.dbSeason.seasonLeft--;
+            this.logger.logWithColor(
+                `[TWS] ${this.dbSeason.seasonLeft} raid(s) left for ${this.dbSeason.seasonName}`,
+                LogTextColor.CYAN
+            );
+        } else this.setSeason(seasonValues);
+
+        writeConfig(this.dbSeason, "season", this.logger);
+    }
+
+    public decrementWeather(weatherValues: IWeatherConfig): void {
+        // sessionID check to only decrement by 1 instead of for each player
+        if (
+            this.dbWeather.weatherLeft > 0
+            // && modConfig.fikaAdjustmentID === this.fikaID
+        ) {
+            this.dbWeather.weatherLeft--;
+            this.logger.logWithColor(
+                `[TWS] ${this.dbWeather.weatherLeft} raid(s) left for ${this.dbWeather.weatherName}`,
+                LogTextColor.CYAN
+            );
+        } else this.setSeason(weatherValues);
+
+        writeConfig(this.dbWeather, "weather", this.logger);
+    }
 }
 
 export default WeatherSystem;
