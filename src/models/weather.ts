@@ -13,18 +13,23 @@ export const weatherDBDefaults: WeatherDB = {
     weatherLeft: 3,
 };
 
-export interface WeatherConfigPattern {
+export interface WeatherConfig {
     name: string;
     weather: ISeasonalValues;
 }
 
-// export interface WeatherWeights {
-//   STORMY: number;
-//   FOGGY: number;
-//   WINDY: number;
-//   MISTY: number;
-//   SUNNY: number;
-// }
+interface WeatherWeights {
+    [key: string]: number;
+}
+
+export interface WeatherWeightsConfig {
+    SUMMER: WeatherWeights;
+    AUTUMN: WeatherWeights;
+    WINTER: WeatherWeights;
+    SPRING: WeatherWeights;
+    AUTUMN_LATE: WeatherWeights;
+    SPRING_EARLY: WeatherWeights;
+}
 
 export const weatherDefault: ISeasonalValues = {
     clouds: {

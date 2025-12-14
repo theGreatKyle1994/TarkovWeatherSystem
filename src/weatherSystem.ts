@@ -2,12 +2,17 @@
 import modConfig from "../config/config.json";
 import dbWeatherConfig from "../config/db/weather.json";
 import dbSeasonConfig from "../config/db/season.json";
-import weightsConfig from "../config/weightsConfig.json";
+import seasonWeights from "../config/seasonWeights.json";
+import weatherWeights from "../config/defaultWeather/weights.json";
 
 // General Imports
 import { seasonDates, SeasonName, seasonOrder } from "./models/seasons";
-import type { WeatherDB, WeatherConfigPattern } from "./models/weather";
-import type { SeasonDB, SeasonWeights } from "./models/seasons";
+import type {
+    WeatherDB,
+    WeatherWeightsConfig,
+    WeatherConfig,
+} from "./models/weather";
+import type { SeasonDB } from "./models/seasons";
 import { checkConfigs } from "./validation/validationUtilities";
 import { writeConfig, chooseWeight, loadConfigs } from "./utilities/utils";
 
@@ -21,11 +26,19 @@ import type {
 import { Season } from "@spt/models/enums/Season";
 
 class WeatherSystem {
+    public logger: ILogger;
     public dbWeather = dbWeatherConfig as WeatherDB;
     public dbSeason = dbSeasonConfig as SeasonDB;
-    public weatherConfigs: WeatherConfigPattern[] = [];
+    public weatherConfigs: WeatherConfig[] = [];
     public weatherTypes: string[] = [];
-    public logger: ILogger;
+    public weatherWeights: WeatherWeightsConfig = {
+        SUMMER: {},
+        AUTUMN: {},
+        WINTER: {},
+        SPRING: {},
+        AUTUMN_LATE: {},
+        SPRING_EARLY: {},
+    };
 
     public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
         this.logger = logger;
@@ -59,9 +72,10 @@ class WeatherSystem {
 
     public async enableWeather(weatherValues: IWeatherConfig) {
         // Load default weather configs
-        this.weatherConfigs = await loadConfigs<WeatherConfigPattern>(
+        this.weatherConfigs = await loadConfigs<WeatherConfig>(
+            this.logger,
             "defaultWeather",
-            this.logger
+            ["weights.json"]
         );
 
         // Grab initial weather count
@@ -72,9 +86,10 @@ class WeatherSystem {
         );
 
         // Load custom weather configs
-        this.weatherConfigs = await loadConfigs<WeatherConfigPattern>(
-            "customWeather",
+        this.weatherConfigs = await loadConfigs<WeatherConfig>(
             this.logger,
+            "customWeather",
+            ["weights.json", "example.json"],
             this.weatherConfigs
         );
 
@@ -171,14 +186,11 @@ class WeatherSystem {
     }
 
     public getRandomSeason(): string {
-        const seasonWeights: SeasonWeights = weightsConfig.seasonWeights;
         return chooseWeight(seasonWeights);
     }
 
     public getRandomWeather(): string {
-        const weatherWeights =
-            weightsConfig.weatherWeights[this.dbSeason.seasonName];
-        return chooseWeight(weatherWeights);
+        return chooseWeight(weatherWeights[this.dbSeason.seasonName]);
     }
 
     public findWeather(target: string): ISeasonalValues {

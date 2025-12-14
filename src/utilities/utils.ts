@@ -39,8 +39,9 @@ export function chooseWeight(weights: Object): string {
 }
 
 export async function loadConfigs<T = string>(
-    subPath: string,
     logger: ILogger,
+    subPath: string,
+    blacklist: string[] = [],
     preConfig: T[] = []
 ): Promise<T[]> {
     let filePaths: string[] = [];
@@ -60,8 +61,10 @@ export async function loadConfigs<T = string>(
         logger.warning(`[TWS] Error reading /config/${subPath} directory.`);
     }
 
-    // Remove example.json from list
-    filePaths = filePaths.filter((path) => path !== "example.json");
+    // Remove blacklisted items from list
+    for (let blItem of blacklist)
+        if (filePaths.includes(blItem))
+            filePaths.splice(filePaths.indexOf(blItem), 1);
 
     // Index variale for error tracking
     let index: number = -1;
