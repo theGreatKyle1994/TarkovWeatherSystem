@@ -4,5 +4,7 @@
     "enableWeather": true,
     "useSeasonLength": true,
     "useWeatherLength": true,
+    "useDefaultWeather": true,
+    "useCustomWeather": false,
     "randomSeasons": false
 }

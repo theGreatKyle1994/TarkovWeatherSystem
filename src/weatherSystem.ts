@@ -75,49 +75,60 @@ class WeatherSystem {
     }
 
     public async enableWeather(weatherValues: IWeatherConfig) {
-        // Load default weather configs
-        this.weatherConfigs = await loadConfigs<WeatherConfig>(
-            this.logger,
-            "defaultWeather",
-            ["weights.json"]
-        );
+        let weatherCount: number = 0;
+        // Load default weather
+        if (modConfig.useDefaultWeather) {
+            // Load default weather configs
+            this.weatherConfigs = await loadConfigs<WeatherConfig>(
+                this.logger,
+                "defaultWeather",
+                ["weights.json"]
+            );
 
-        // Load default weather weights
-        this.weatherWeights = await loadWeights(this.logger, "defaultWeather");
+            // Load default weather weights
+            this.weatherWeights = await loadWeights(
+                this.logger,
+                "defaultWeather"
+            );
 
-        // Grab initial weather count
-        let customWeatherLength: number = this.weatherConfigs.length;
-        this.logger.logWithColor(
-            `[TWS] Loaded ${customWeatherLength} default weather pattern(s).`,
-            LogTextColor.CYAN
-        );
+            // Grab initial weather count
+            weatherCount += this.weatherConfigs.length;
 
-        // Load custom weather configs
-        this.weatherConfigs = await loadConfigs<WeatherConfig>(
-            this.logger,
-            "customWeather",
-            ["weights.json", "example.json", "exampleWeights.json"],
-            this.weatherConfigs
-        );
+            this.logger.logWithColor(
+                `[TWS] Loaded ${weatherCount} default weather pattern(s).`,
+                LogTextColor.CYAN
+            );
+        }
 
-        // Load custom weather weights
-        this.weatherWeights = await loadWeights(
-            this.logger,
-            "customWeather",
-            this.weatherWeights
-        );
+        // Load custom weather
+        if (modConfig.useCustomWeather) {
+            this.weatherConfigs = await loadConfigs<WeatherConfig>(
+                this.logger,
+                "customWeather",
+                ["weights.json", "example.json", "exampleWeights.json"],
+                this.weatherConfigs
+            );
+
+            // Load custom weather weights
+            this.weatherWeights = await loadWeights(
+                this.logger,
+                "customWeather",
+                this.weatherWeights
+            );
+
+            // Find difference for custom config length
+            weatherCount -= this.weatherConfigs.length;
+
+            this.logger.logWithColor(
+                `[TWS] Loaded ${Math.abs(
+                    weatherCount
+                )} custom weather pattern(s).`,
+                LogTextColor.CYAN
+            );
+        }
 
         // Grab all weather names, default and custom
         for (let { name } of this.weatherConfigs) this.weatherTypes.push(name);
-
-        // Find difference for custom config length
-        customWeatherLength -= this.weatherConfigs.length;
-        this.logger.logWithColor(
-            `[TWS] Loaded ${Math.abs(
-                customWeatherLength
-            )} custom weather pattern(s).`,
-            LogTextColor.CYAN
-        );
 
         // Set initial weather
         this.setWeather(weatherValues);
