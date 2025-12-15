@@ -5,7 +5,6 @@ import fs from "fs/promises";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
-import { log } from "console";
 
 export async function writeConfig<ConfigType>(
     config: ConfigType,
@@ -18,71 +17,7 @@ export async function writeConfig<ConfigType>(
             JSON.stringify(config, null, 2)
         );
     } catch {
-        logger.error(`[TWS] Could not write to /config/${fileName}.json.`);
-    }
-}
-
-export async function loadWeights(
-    logger: ILogger,
-    subPath: string,
-    weights: WeatherWeightsConfig = {
-        SUMMER: {},
-        AUTUMN: {},
-        WINTER: {},
-        SPRING: {},
-        AUTUMN_LATE: {},
-        SPRING_EARLY: {},
-    }
-): Promise<WeatherWeightsConfig> {
-    let weightsConfig: WeatherWeightsConfig;
-    try {
-        // Get weight config based on sub folder
-        weightsConfig = JSON.parse(
-            await fs.readFile(
-                path.join(__dirname, `../../config/${subPath}/weights.json`),
-                {
-                    encoding: "utf-8",
-                }
-            )
-        );
-
-        // Add config values to weight config
-        weights = {
-            SUMMER: { ...weights.SUMMER, ...weightsConfig.SUMMER },
-            AUTUMN: { ...weights.AUTUMN, ...weightsConfig.AUTUMN },
-            WINTER: { ...weights.WINTER, ...weightsConfig.WINTER },
-            SPRING: { ...weights.SPRING, ...weightsConfig.SPRING },
-            AUTUMN_LATE: {
-                ...weights.AUTUMN_LATE,
-                ...weightsConfig.AUTUMN_LATE,
-            },
-            SPRING_EARLY: {
-                ...weights.SPRING_EARLY,
-                ...weightsConfig.SPRING_EARLY,
-            },
-        };
-
-        return weights;
-    } catch (err) {
-        logger.warning(`[TWS] Could not load: ${subPath}/weights.json.`);
-    }
-}
-
-export function chooseWeight(weights: Object): string {
-    let totalWeight = 0;
-
-    // Calculate total weight of season weather types
-    for (let key in weights) {
-        totalWeight += weights[key];
-    }
-
-    // Determine random weather choice
-    const cursor = Math.ceil(Math.random() * totalWeight);
-    let total = 0;
-
-    for (let key in weights) {
-        total += weights[key];
-        if (total >= cursor) return key;
+        logger.error(`[TWS] Could not write to /config/db/${fileName}.json.`);
     }
 }
 
@@ -90,6 +25,7 @@ export async function loadConfig<T>(
     logger: ILogger,
     filePath: string
 ): Promise<T> {
+    // Grab config in config/subPath
     try {
         return JSON.parse(
             await fs.readFile(
@@ -155,4 +91,68 @@ export async function loadConfigs<T = string>(
     }
 
     return configs;
+}
+
+export async function loadWeights(
+    logger: ILogger,
+    subPath: string,
+    weights: WeatherWeightsConfig = {
+        SUMMER: {},
+        AUTUMN: {},
+        WINTER: {},
+        SPRING: {},
+        AUTUMN_LATE: {},
+        SPRING_EARLY: {},
+    }
+): Promise<WeatherWeightsConfig> {
+    let weightsConfig: WeatherWeightsConfig;
+    try {
+        // Get weight config based on sub folder
+        weightsConfig = JSON.parse(
+            await fs.readFile(
+                path.join(__dirname, `../../config/${subPath}/weights.json`),
+                {
+                    encoding: "utf-8",
+                }
+            )
+        );
+
+        // Add config values to weight config
+        weights = {
+            SUMMER: { ...weights.SUMMER, ...weightsConfig.SUMMER },
+            AUTUMN: { ...weights.AUTUMN, ...weightsConfig.AUTUMN },
+            WINTER: { ...weights.WINTER, ...weightsConfig.WINTER },
+            SPRING: { ...weights.SPRING, ...weightsConfig.SPRING },
+            AUTUMN_LATE: {
+                ...weights.AUTUMN_LATE,
+                ...weightsConfig.AUTUMN_LATE,
+            },
+            SPRING_EARLY: {
+                ...weights.SPRING_EARLY,
+                ...weightsConfig.SPRING_EARLY,
+            },
+        };
+
+        return weights;
+    } catch (err) {
+        logger.warning(`[TWS] Could not load: ${subPath}/weights.json.`);
+    }
+}
+
+export function chooseWeight(weights: Object): string {
+    let totalWeight = 0;
+
+    // Calculate total weight
+    for (let key in weights) {
+        totalWeight += weights[key];
+    }
+
+    // Determine random weight choice
+    const cursor = Math.ceil(Math.random() * totalWeight);
+    let total = 0;
+
+    for (let key in weights) {
+        total += weights[key];
+        if (total >= cursor) return key;
+    }
 }
