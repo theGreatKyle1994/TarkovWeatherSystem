@@ -5,7 +5,6 @@ import modConfig from "../config/config.json";
 import { DependencyContainer } from "tsyringe";
 import WeatherSystem from "./weatherSystem";
 import FikaHandler from "./utilities/fikaHandler";
-import { checkModConfig } from "./validation/validationUtilities";
 
 // SPT Imports
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
@@ -38,9 +37,6 @@ class TarkovWeatherSystem implements IPreSptLoadMod {
         this.weatherSeasonValues = this.configServer.getConfig<IWeatherConfig>(
             ConfigTypes.WEATHER
         );
-
-        // Validate mod config is good before initializing mod
-        checkModConfig(modConfig, this.logger);
 
         // Initialize core mod
         if (modConfig.enable) {

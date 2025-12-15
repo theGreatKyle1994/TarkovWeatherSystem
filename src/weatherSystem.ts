@@ -12,7 +12,6 @@ import type {
     WeatherConfig,
 } from "./models/weather";
 import type { SeasonDB } from "./models/seasons";
-import { checkConfigs } from "./validation/validationUtilities";
 import {
     writeConfig,
     chooseWeight,
@@ -47,9 +46,6 @@ class WeatherSystem {
     public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
         this.logger = logger;
         this.logger.log(`[TWS] Loading...`, LogTextColor.GREEN);
-
-        // Validate db configs
-        checkConfigs(this.dbSeason, this.dbWeather, this.logger);
 
         // Setup season
         if (modConfig.modules.seasons.enable)
