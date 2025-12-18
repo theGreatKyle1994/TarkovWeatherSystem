@@ -71,7 +71,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                             // Only host can modify configs
                             if (
                                 modConfig.modules.seasons.enable &&
-                                modConfig.modules.seasons.useLength &&
+                                modConfig.modules.seasons.duration.enable &&
                                 isHost
                             )
                                 this._SeasonModule.decrementSeason(
@@ -79,7 +79,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                                 );
                             if (
                                 modConfig.modules.weather.enable &&
-                                modConfig.modules.weather.useLength &&
+                                modConfig.modules.weather.duration.enable &&
                                 isHost
                             )
                                 this._WeatherModule.decrementWeather(

@@ -67,12 +67,10 @@ export default class WeatherModule {
 
         // Grab initial weather count
         weatherCount += this._weatherConfigs.length;
-
-        modConfig.log.debug &&
-            this._logger.logWithColor(
-                `[TWS] Loaded ${weatherCount} default weather pattern(s).`,
-                LogTextColor.CYAN
-            );
+        this._logger.logWithColor(
+            `[TWS] Loaded ${weatherCount} default weather pattern(s).`,
+            LogTextColor.CYAN
+        );
 
         // Load custom weather
         if (modConfig.modules.weather.useCustom) {
@@ -92,14 +90,12 @@ export default class WeatherModule {
 
             // Find difference for custom config length
             weatherCount -= this._weatherConfigs.length;
-
-            modConfig.log.debug &&
-                this._logger.logWithColor(
-                    `[TWS] Loaded ${Math.abs(
-                        weatherCount
-                    )} custom weather pattern(s).`,
-                    LogTextColor.CYAN
-                );
+            this._logger.logWithColor(
+                `[TWS] Loaded ${Math.abs(
+                    weatherCount
+                )} custom weather pattern(s).`,
+                LogTextColor.CYAN
+            );
         }
 
         // Grab all weather names, default and custom
@@ -108,7 +104,7 @@ export default class WeatherModule {
 
         // Set initial weather
         this.setWeather(weatherValues);
-        modConfig.log.raidsRemaining &&
+        modConfig.modules.weather.log.raidsRemaining &&
             this._logger.logWithColor(
                 `[TWS] ${this._dbWeather.raidsRemaining} raid(s) left for ${this._dbWeather.name}`,
                 LogTextColor.CYAN
@@ -136,7 +132,7 @@ export default class WeatherModule {
             weatherValues.weather.seasonValues["default"] =
                 this.findWeather(weatherChoice);
 
-            modConfig.log.weather &&
+            modConfig.modules.weather.log.onChange &&
                 this._logger.log(
                     `[TWS] The weather changed to: ${this._dbWeather.name}`,
                     LogTextColor.BLUE
@@ -150,7 +146,7 @@ export default class WeatherModule {
                 this._dbWeather.name
             );
 
-            modConfig.log.weather &&
+            modConfig.modules.weather.log.current &&
                 this._logger.log(
                     `[TWS] Weather is: ${this._dbWeather.name}`,
                     LogTextColor.CYAN
@@ -168,7 +164,7 @@ export default class WeatherModule {
         // Confirm weatherdb has more raids left
         if (this._dbWeather.raidsRemaining > 0) {
             this._dbWeather.raidsRemaining--;
-            modConfig.log.raidsRemaining &&
+            modConfig.modules.weather.log.raidsRemaining &&
                 this._logger.logWithColor(
                     `[TWS] ${this._dbWeather.raidsRemaining} raid(s) left for ${this._dbWeather.name}`,
                     LogTextColor.CYAN

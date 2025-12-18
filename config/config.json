@@ -1,21 +1,68 @@
 {
     "enable": true,
-    "log": {
-        "debug": false,
-        "season": true,
-        "weather": true,
-        "raidsRemaining": true
-    },
     "modules": {
         "seasons": {
             "enable": true,
-            "useLength": true,
+            "log": {
+                "current": true,
+                "onChange": true,
+                "raidsRemaining": true
+            },
+            "duration": {
+                "enable": true,
+                "length": 14
+            },
             "useRandom": false
         },
         "weather": {
             "enable": true,
-            "useLength": true,
+            "log": {
+                "current": true,
+                "onChange": true,
+                "raidsRemaining": true
+            },
+            "duration": {
+                "enable": true,
+                "length": 3
+            },
             "useCustom": false
+        },
+        "calander": {
+            "enable": true,
+            "log": {
+                "current": true,
+                "onChange": true,
+                "raidsRemaining": true
+            },
+            "duration": {
+                "enable": true,
+                "length": 30
+            },
+            "events": {
+                "enable": true,
+                "xmas": {
+                    "enable": true,
+                    "month": {
+                        "start": 12,
+                        "end": 1
+                    },
+                    "day": {
+                        "start": 1,
+                        "end": 30
+                    }
+                },
+                "halloween": {
+                    "enable": true,
+                    "month": {
+                        "start": 10,
+                        "end": 11
+                    },
+                    "day": {
+                        "start": 1,
+                        "end": 30
+                    }
+                }
+            }
         }
     }
 }

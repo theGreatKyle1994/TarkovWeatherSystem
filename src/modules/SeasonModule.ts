@@ -33,7 +33,7 @@ export default class SeasonModule {
 
         // Set initial season
         this.setSeason(seasonValues);
-        modConfig.log.raidsRemaining &&
+        modConfig.modules.seasons.log.raidsRemaining &&
             this._logger.logWithColor(
                 `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
                 LogTextColor.CYAN
@@ -64,7 +64,7 @@ export default class SeasonModule {
 
             // Set chosen season to game database
             seasonValues.overrideSeason = Season[this._seasonDB.name];
-            modConfig.log.season &&
+            modConfig.modules.seasons.log.onChange &&
                 this._logger.log(
                     `[TWS] The season changed to: ${this._seasonDB.name}`,
                     LogTextColor.BLUE
@@ -74,7 +74,7 @@ export default class SeasonModule {
         } else {
             // Enforce current values
             seasonValues.overrideSeason = Season[this._seasonDB.name];
-            modConfig.log.season &&
+            modConfig.modules.seasons.log.current &&
                 this._logger.log(
                     `[TWS] Season is: ${this._seasonDB.name}`,
                     LogTextColor.CYAN
@@ -86,7 +86,7 @@ export default class SeasonModule {
         // Confirm seasondb has more raids left
         if (this._seasonDB.raidsRemaining > 0) {
             this._seasonDB.raidsRemaining--;
-            modConfig.log.raidsRemaining &&
+            modConfig.modules.seasons.log.raidsRemaining &&
                 this._logger.logWithColor(
                     `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
                     LogTextColor.CYAN
