@@ -1,6 +1,11 @@
 {
     "enable": true,
-    "debug": false,
+    "log": {
+        "debug": false,
+        "season": true,
+        "weather": true,
+        "raidsRemaining": true
+    },
     "modules": {
         "seasons": {
             "enable": true,

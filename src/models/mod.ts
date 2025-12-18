@@ -1,6 +1,11 @@
 export interface ModConfig {
     enable: boolean;
-    debug: boolean;
+    log: {
+        debug: boolean;
+        season: boolean;
+        weather: boolean;
+        raidsRemaining: boolean;
+    };
     modules: {
         seasons: {
             enable: boolean;

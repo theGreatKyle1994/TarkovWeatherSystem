@@ -33,10 +33,11 @@ export default class SeasonModule {
 
         // Set initial season
         this.setSeason(seasonValues);
-        this._logger.logWithColor(
-            `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
-            LogTextColor.CYAN
-        );
+        modConfig.log.raidsRemaining &&
+            this._logger.logWithColor(
+                `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
+                LogTextColor.CYAN
+            );
     }
 
     public setSeason(seasonValues: IWeatherConfig) {
@@ -63,20 +64,21 @@ export default class SeasonModule {
 
             // Set chosen season to game database
             seasonValues.overrideSeason = Season[this._seasonDB.name];
-            this._logger.log(
-                `[TWS] The season changed to: ${this._seasonDB.name}`,
-                LogTextColor.BLUE
-            );
+            modConfig.log.season &&
+                this._logger.log(
+                    `[TWS] The season changed to: ${this._seasonDB.name}`,
+                    LogTextColor.BLUE
+                );
 
             writeDatabase(this._seasonDB, "season", this._logger);
         } else {
             // Enforce current values
             seasonValues.overrideSeason = Season[this._seasonDB.name];
-
-            this._logger.log(
-                `[TWS] Season is: ${this._seasonDB.name}`,
-                LogTextColor.CYAN
-            );
+            modConfig.log.season &&
+                this._logger.log(
+                    `[TWS] Season is: ${this._seasonDB.name}`,
+                    LogTextColor.CYAN
+                );
         }
     }
 
@@ -84,10 +86,11 @@ export default class SeasonModule {
         // Confirm seasondb has more raids left
         if (this._seasonDB.raidsRemaining > 0) {
             this._seasonDB.raidsRemaining--;
-            this._logger.logWithColor(
-                `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
-                LogTextColor.CYAN
-            );
+            modConfig.log.raidsRemaining &&
+                this._logger.logWithColor(
+                    `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
+                    LogTextColor.CYAN
+                );
         } else this.setSeason(seasonValues);
 
         writeDatabase(this._seasonDB, "season", this._logger);
