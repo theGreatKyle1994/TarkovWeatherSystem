@@ -1,16 +1,11 @@
-export interface SeasonDB {
+export interface DBEntry {
     name: string;
     length: number;
-    raidsRemaining: number;
-}
-
-export interface WeatherDB {
-    name: string;
-    length: number;
-    raidsRemaining: number;
+    remaining: number;
 }
 
 export interface Database {
-    season: SeasonDB;
-    weather: WeatherDB;
+    season: DBEntry;
+    weather: DBEntry;
+    calendar: DBEntry;
 }

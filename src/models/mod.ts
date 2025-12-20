@@ -1,43 +1,39 @@
-interface DurationEntry {
-    enable: boolean;
-    length: number;
-}
-
-interface TimeStampEntry {
+export interface TimeStampEntry {
     start: number;
     end: number;
 }
 
-interface LogEntry {
-    current: boolean;
-    onChange: boolean;
-    raidsRemaining: boolean;
-}
-
-interface EventEntry {
+export interface EventEntry {
     enable: boolean;
     month: TimeStampEntry;
     day: TimeStampEntry;
 }
 
+export interface DurationEntry {
+    enable: boolean;
+    length: number;
+}
+
 export interface ModConfig {
-    enable: true;
+    enable: boolean;
+    log: {
+        current: boolean;
+        onChange: boolean;
+        remaining: boolean;
+    };
     modules: {
         seasons: {
             enable: boolean;
-            log: LogEntry;
-            duration: DurationEntry;
             useRandom: boolean;
+            duration: DurationEntry;
         };
         weather: {
             enable: boolean;
-            log: LogEntry;
-            duration: DurationEntry;
             useCustom: boolean;
+            duration: DurationEntry;
         };
-        calander: {
+        calendar: {
             enable: boolean;
-            log: LogEntry;
             duration: DurationEntry;
             events: {
                 enable: boolean;

@@ -3,7 +3,7 @@ import modConfig from "../../config/config.json";
 import localDB from "../../config/db/database.json";
 
 // General
-import type { Database, SeasonDB, WeatherDB } from "../models/database";
+import type { Database, DBEntry } from "../models/database";
 import type {
     WeatherWeightsConfig,
     WeatherCustomConfig,
@@ -26,8 +26,8 @@ import type {
 
 export default class WeatherModule {
     private _logger: ILogger;
-    private _dbWeather: WeatherDB = localDB.weather;
-    private _dbSeason: SeasonDB = localDB.season;
+    private _dbWeather: DBEntry = localDB.weather;
+    private _dbSeason: DBEntry = localDB.season;
     private _weatherConfigs: WeatherCustomConfig[] = [];
     private _weatherTypes: string[] = [];
     private _weatherWeights: WeatherWeightsConfig = {
@@ -104,16 +104,16 @@ export default class WeatherModule {
 
         // Set initial weather
         this.setWeather(weatherValues);
-        modConfig.modules.weather.log.raidsRemaining &&
+        modConfig.log.raidsRemaining &&
             this._logger.logWithColor(
-                `[TWS] ${this._dbWeather.raidsRemaining} raid(s) left for ${this._dbWeather.name}`,
+                `[TWS] ${this._dbWeather.remaining} raid(s) left for ${this._dbWeather.name}`,
                 LogTextColor.CYAN
             );
     }
 
     public async setWeather(weatherValues: IWeatherConfig): Promise<void> {
         // Check if weather change is needed
-        if (this._dbWeather.raidsRemaining <= 0) {
+        if (this._dbWeather.remaining <= 0) {
             // Update local season values
             this._dbSeason = (
                 await loadConfig<Database>(this._logger, "db/database")
@@ -126,13 +126,13 @@ export default class WeatherModule {
 
             // Set local weather database
             this._dbWeather.name = weatherChoice;
-            this._dbWeather.raidsRemaining = this._dbWeather.length;
+            this._dbWeather.remaining = this._dbWeather.length;
 
             // Set chosen weather to game database
             weatherValues.weather.seasonValues["default"] =
                 this.findWeather(weatherChoice);
 
-            modConfig.modules.weather.log.onChange &&
+            modConfig.log.onChange &&
                 this._logger.log(
                     `[TWS] The weather changed to: ${this._dbWeather.name}`,
                     LogTextColor.BLUE
@@ -146,7 +146,7 @@ export default class WeatherModule {
                 this._dbWeather.name
             );
 
-            modConfig.modules.weather.log.current &&
+            modConfig.log.current &&
                 this._logger.log(
                     `[TWS] Weather is: ${this._dbWeather.name}`,
                     LogTextColor.CYAN
@@ -162,11 +162,11 @@ export default class WeatherModule {
 
     public decrementWeather(weatherValues: IWeatherConfig): void {
         // Confirm weatherdb has more raids left
-        if (this._dbWeather.raidsRemaining > 0) {
-            this._dbWeather.raidsRemaining--;
-            modConfig.modules.weather.log.raidsRemaining &&
+        if (this._dbWeather.remaining > 0) {
+            this._dbWeather.remaining--;
+            modConfig.log.raidsRemaining &&
                 this._logger.logWithColor(
-                    `[TWS] ${this._dbWeather.raidsRemaining} raid(s) left for ${this._dbWeather.name}`,
+                    `[TWS] ${this._dbWeather.remaining} raid(s) left for ${this._dbWeather.name}`,
                     LogTextColor.CYAN
                 );
         } else this.setWeather(weatherValues);

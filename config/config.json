@@ -1,39 +1,29 @@
 {
     "enable": true,
+    "log": {
+        "current": true,
+        "onChange": true,
+        "raidsRemaining": true
+    },
     "modules": {
         "seasons": {
             "enable": true,
-            "log": {
-                "current": true,
-                "onChange": true,
-                "raidsRemaining": true
-            },
+            "useRandom": false,
             "duration": {
                 "enable": true,
                 "length": 14
-            },
-            "useRandom": false
+            }
         },
         "weather": {
             "enable": true,
-            "log": {
-                "current": true,
-                "onChange": true,
-                "raidsRemaining": true
-            },
+            "useCustom": false,
             "duration": {
                 "enable": true,
                 "length": 3
-            },
-            "useCustom": false
+            }
         },
-        "calander": {
+        "calendar": {
             "enable": true,
-            "log": {
-                "current": true,
-                "onChange": true,
-                "raidsRemaining": true
-            },
             "duration": {
                 "enable": true,
                 "length": 30

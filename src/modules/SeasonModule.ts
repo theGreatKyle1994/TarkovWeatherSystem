@@ -4,7 +4,7 @@ import localDB from "../../config/db/database.json";
 import seasonWeights from "../../config/season/weights.json";
 
 // General Imports
-import type { SeasonDB } from "../models/database";
+import type { DBEntry } from "../models/database";
 import { seasonDates, SeasonName, seasonOrder } from "../models/seasons";
 import { writeDatabase, chooseWeight } from "../utilities/utils";
 
@@ -16,7 +16,7 @@ import { Season } from "@spt/models/enums/Season";
 
 export default class SeasonModule {
     private _logger: ILogger;
-    private _seasonDB: SeasonDB = localDB.season;
+    private _seasonDB: DBEntry = localDB.season;
 
     public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
         this._logger = logger;
@@ -33,16 +33,16 @@ export default class SeasonModule {
 
         // Set initial season
         this.setSeason(seasonValues);
-        modConfig.modules.seasons.log.raidsRemaining &&
+        modConfig.log.raidsRemaining &&
             this._logger.logWithColor(
-                `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
+                `[TWS] ${this._seasonDB.remaining} raid(s) left for ${this._seasonDB.name}`,
                 LogTextColor.CYAN
             );
     }
 
     public setSeason(seasonValues: IWeatherConfig) {
         // Check if season change is needed
-        if (this._seasonDB.raidsRemaining <= 0) {
+        if (this._seasonDB.remaining <= 0) {
             let seasonChoice: string = "";
 
             // Use random seasons
@@ -60,11 +60,11 @@ export default class SeasonModule {
 
             // Set local season database
             this._seasonDB.name = SeasonName[seasonChoice];
-            this._seasonDB.raidsRemaining = this._seasonDB.length;
+            this._seasonDB.remaining = this._seasonDB.length;
 
             // Set chosen season to game database
             seasonValues.overrideSeason = Season[this._seasonDB.name];
-            modConfig.modules.seasons.log.onChange &&
+            modConfig.log.onChange &&
                 this._logger.log(
                     `[TWS] The season changed to: ${this._seasonDB.name}`,
                     LogTextColor.BLUE
@@ -74,7 +74,7 @@ export default class SeasonModule {
         } else {
             // Enforce current values
             seasonValues.overrideSeason = Season[this._seasonDB.name];
-            modConfig.modules.seasons.log.current &&
+            modConfig.log.current &&
                 this._logger.log(
                     `[TWS] Season is: ${this._seasonDB.name}`,
                     LogTextColor.CYAN
@@ -84,11 +84,11 @@ export default class SeasonModule {
 
     public decrementSeason(seasonValues: IWeatherConfig): void {
         // Confirm seasondb has more raids left
-        if (this._seasonDB.raidsRemaining > 0) {
-            this._seasonDB.raidsRemaining--;
-            modConfig.modules.seasons.log.raidsRemaining &&
+        if (this._seasonDB.remaining > 0) {
+            this._seasonDB.remaining--;
+            modConfig.log.raidsRemaining &&
                 this._logger.logWithColor(
-                    `[TWS] ${this._seasonDB.raidsRemaining} raid(s) left for ${this._seasonDB.name}`,
+                    `[TWS] ${this._seasonDB.remaining} raid(s) left for ${this._seasonDB.name}`,
                     LogTextColor.CYAN
                 );
         } else this.setSeason(seasonValues);
