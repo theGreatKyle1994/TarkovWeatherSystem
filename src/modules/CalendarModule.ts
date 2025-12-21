@@ -17,7 +17,6 @@ import { writeDatabase } from "../utilities/utils";
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
-import { SeasonName, seasonOrder } from "../models/seasons";
 
 export default class CalendarModule {
     private _logger: ILogger;
@@ -29,125 +28,118 @@ export default class CalendarModule {
         this._logger = logger;
         this._SeasonModule = SeasonModule;
 
-        // Setup calendar
-        if (modConfig.modules.calendar.enable) this.enableCalendar();
-        else
-            this._logger.log(
-                "[DES] Calendar is disabled.",
-                LogTextColor.YELLOW
-            );
-    }
-
-    private enableCalendar(): void {
-        // Setup calendar if seasons are enabled
-        if (modConfig.modules.seasons.enable) this.setCalendar();
-        else
-            this._logger.log(
+        // Season module is required for calendar functionality
+        if (!modConfig.modules.seasons.enable) {
+            this._logger.logWithColor(
                 "[DES] Seasons are disabled. They must be enabled to use the calendar module.",
                 LogTextColor.YELLOW
             );
+            // Setup calendar
+        } else if (modConfig.modules.calendar.enable) {
+            this.setCalendar();
+        } else {
+            this._logger.logWithColor(
+                "[DES] Calendar is disabled.",
+                LogTextColor.YELLOW
+            );
+        }
     }
 
     public setCalendar(): void {
         // Check if calendar change is needed
         if (this._calendarDB.value > this._calendarDB.length) {
-            let monthChoice = "";
-
             // Determine next month in queue
-            const calendarIndex = calendarOrder.indexOf(this._calendarDB.name);
-
-            if (calendarIndex === calendarOrder.length - 1)
-                monthChoice = calendarOrder[0];
-            else monthChoice = calendarOrder[calendarIndex + 1];
-
-            // Force season change to bypass season system
-            this._SeasonModule.forceSeason(
-                this.checkSeasonChange(this._SeasonModule.getSeason())
-            );
+            let monthIndex = this.getMonthIndex();
+            const monthChoice =
+                monthIndex === calendarOrder.length - 1
+                    ? calendarOrder[0]
+                    : calendarOrder[monthIndex + 1];
+            monthIndex = calendarOrder.indexOf(monthChoice);
 
             // Set local calendar database
             this._calendarDB.name = CalendarName[monthChoice];
             this._calendarDB.value = 1;
 
-            modConfig.log.onChange &&
-                this._logger.logWithColor(
-                    `[DES] Date change to: ${this._calendarDB.name} - ${this._calendarDB.value}.`,
-                    LogTextColor.CYAN
-                );
+            this.logDateChange();
 
             // Write changes to local db
             writeDatabase(this._calendarDB, "calendar", this._logger);
         } else {
-            modConfig.log.current &&
-                this._logger.logWithColor(
-                    `[DES] Date is: ${this._calendarDB.name} - ${this._calendarDB.value}.`,
-                    LogTextColor.CYAN
-                );
-            modConfig.log.current &&
-                this._logger.log(
-                    `[DES] Season is: ${this._SeasonModule.getSeason()}`,
-                    LogTextColor.CYAN
-                );
+            this.logDate();
+            this._SeasonModule.logSeason();
         }
-    }
-
-    private checkSeasonChange(
-        currentSeason: keyof typeof SeasonName
-    ): keyof typeof SeasonName {
-        // Grab current season layout
-        const season: SeasonLayoutEntry = this._layouts[currentSeason];
-
-        // Validate season timeframes
-        const monthIndex = calendarOrder.indexOf(this._calendarDB.name);
-        const monthOffset =
-            season.month.start + season.month.end - (monthIndex + 1);
-
-        // Determine if current month falls inside season range
-        if (
-            monthOffset >= season.month.start ||
-            monthOffset <= season.month.end
-        ) {
-            // Determine if current month is last month of the season
-            if (monthIndex + 1 === season.month.end) {
-                // Check if current day falls inside season range
-                if (
-                    this._calendarDB.value >= season.day.start &&
-                    this._calendarDB.value <= season.day.end
-                ) {
-                    return currentSeason;
-                }
-                // Get new season values
-                else {
-                    let newSeason = currentSeason;
-                    // Find new season index
-                    if (
-                        seasonOrder.indexOf(currentSeason) ===
-                        seasonOrder.length - 1
-                    ) {
-                        newSeason = seasonOrder[0];
-                    } else {
-                        newSeason =
-                            seasonOrder[seasonOrder.indexOf(currentSeason) + 1];
-                    }
-                    // Return season change
-                    return newSeason;
-                }
-            }
-        }
-        return currentSeason;
+        // Determine if season change is needed
+        this.checkSeasonChange();
     }
 
     public incrementCalendar(): void {
         // Confirm calendardb has more raids left
         if (this._calendarDB.value < this._calendarDB.length) {
             this._calendarDB.value++;
-            modConfig.log.value &&
-                this._logger.logWithColor(
-                    `[DES] Date is: ${this._calendarDB.name}/${this._calendarDB.value}.`,
-                    LogTextColor.CYAN
-                );
-        } else this.setCalendar();
+            this.logDate();
+            writeDatabase(this._calendarDB, "calendar", this._logger);
+        }
+        // Determine if season change is needed
+        this.setCalendar();
+    }
 
-        writeDatabase(this._calendarDB, "calendar", this._logger);
+    private checkSeasonChange(): void {
+        // Grab current season layout
+        const season: SeasonLayoutEntry =
+            this._layouts[this._SeasonModule.season];
+
+        // Check month and day range for season update
+        (!this.checkMonthRange(season) ||
+            (this.isFinalMonth(season) && !this.checkDayRange(season))) &&
+            this._SeasonModule.calcNewSeason();
+    }
+
+    private checkMonthRange(season: SeasonLayoutEntry): boolean {
+        // Validate season timeframes
+        const monthIndex = this.getMonthIndex();
+        const monthOffset = season.month.start + season.month.end - monthIndex;
+
+        // Determine if current month falls inside season range
+        return season.month.start > season.month.end
+            ? monthOffset >= season.month.start ||
+                  monthOffset <= season.month.end
+            : monthOffset >= season.month.start &&
+                  monthOffset <= season.month.end;
+    }
+
+    private checkDayRange(season: SeasonLayoutEntry): boolean {
+        const dayOffset =
+            season.day.start + season.day.end - this._calendarDB.value;
+
+        // Check if current day falls inside season range
+        return season.day.start > season.day.end
+            ? dayOffset >= season.day.start || dayOffset <= season.day.end
+            : dayOffset >= season.day.start && dayOffset <= season.day.end;
+    }
+
+    private isFinalMonth(season: SeasonLayoutEntry): boolean {
+        // Determine if current month is last month of the season
+        const monthIndex = this.getMonthIndex();
+        return monthIndex === season.month.end;
+    }
+
+    private getMonthIndex(): number {
+        return calendarOrder.indexOf(this._calendarDB.name) + 1;
+    }
+
+    public logDate(): void {
+        modConfig.log.value &&
+            this._logger.logWithColor(
+                `[DES] Date is: ${this._calendarDB.name} - ${this._calendarDB.value}.`,
+                LogTextColor.CYAN
+            );
+    }
+
+    private logDateChange(): void {
+        modConfig.log.onChange &&
+            this._logger.logWithColor(
+                `[DES] Date changed to: ${this._calendarDB.name} - ${this._calendarDB.value}.`,
+                LogTextColor.BLUE
+            );
     }
 }

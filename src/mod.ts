@@ -71,26 +71,26 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                             const UID = info.results.profile._id;
                             const isHost = this._FikaHandler.isHost(UID);
 
-                            // Check if calendar module is enabled
                             if (isHost) {
                                 // Check if season module is enabled
                                 if (modConfig.modules.seasons.enable) {
-                                    if (modConfig.modules.calendar.enable)
-                                        this._CalendarModule.incrementCalendar();
-                                    else if (
+                                    // Check if calendar module is enabled
+                                    if (
+                                        !modConfig.modules.calendar.enable &&
                                         modConfig.modules.seasons.duration
                                             .enable
-                                    )
+                                    ) {
                                         this._SeasonModule.decrementSeason(
                                             this._weatherSeasonValues
                                         );
+                                    } else {
+                                        this._CalendarModule.incrementCalendar();
+                                    }
                                 }
 
                                 // Check if weather module is enabled
-                                if (
-                                    modConfig.modules.weather.enable &&
-                                    modConfig.modules.weather.duration.enable
-                                )
+                                modConfig.modules.weather.enable &&
+                                    modConfig.modules.weather.duration.enable &&
                                     this._WeatherModule.decrementWeather(
                                         this._weatherSeasonValues
                                     );
@@ -129,7 +129,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                 "[DES] /client/weather"
             );
         } else {
-            this._logger.log(
+            this._logger.logWithColor(
                 "[DES] Mod has been disabled. Check config.",
                 LogTextColor.YELLOW
             );
@@ -145,8 +145,8 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
         // Enable modules
         if (modConfig.enable) {
             this._SeasonModule.enable(this._weatherSeasonValues, this._logger);
-            this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
             this._CalendarModule.enable(this._SeasonModule, this._logger);
+            this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
         }
     }
 }

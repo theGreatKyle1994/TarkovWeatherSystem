@@ -43,10 +43,12 @@ export default class WeatherModule {
         this._logger = logger;
 
         // Setup weather
-        if (modConfig.modules.weather.enable)
-            this.enableWeather(weatherSeasonValues);
-        else
-            this._logger.log("[DES] Weather is disabled.", LogTextColor.YELLOW);
+        modConfig.modules.weather.enable
+            ? this.enableWeather(weatherSeasonValues)
+            : this._logger.logWithColor(
+                  "[DES] Weather is disabled.",
+                  LogTextColor.YELLOW
+              );
     }
 
     private enableWeather(weatherValues: IWeatherConfig): void {
@@ -66,7 +68,7 @@ export default class WeatherModule {
         weatherCount += this._weatherConfigs.length;
         this._logger.logWithColor(
             `[DES] Loaded ${weatherCount} default weather pattern(s).`,
-            LogTextColor.CYAN
+            LogTextColor.GREEN
         );
 
         // Load custom weather
@@ -91,7 +93,7 @@ export default class WeatherModule {
                 `[DES] Loaded ${Math.abs(
                     weatherCount
                 )} custom weather pattern(s).`,
-                LogTextColor.CYAN
+                LogTextColor.GREEN
             );
         }
 
@@ -101,11 +103,7 @@ export default class WeatherModule {
 
         // Set initial weather
         this.setWeather(weatherValues);
-        modConfig.log.value &&
-            this._logger.logWithColor(
-                `[DES] ${this._dbWeather.value} raid(s) left for ${this._dbWeather.name}`,
-                LogTextColor.CYAN
-            );
+        this.logWeatherRemaining();
     }
 
     public setWeather(weatherValues: IWeatherConfig): void {
@@ -129,12 +127,7 @@ export default class WeatherModule {
             // Set chosen weather to game database
             weatherValues.weather.seasonValues["default"] =
                 this.findWeather(weatherChoice);
-
-            modConfig.log.onChange &&
-                this._logger.log(
-                    `[DES] The weather changed to: ${this._dbWeather.name}`,
-                    LogTextColor.BLUE
-                );
+            this.logWeatherChange();
 
             // Write changes to local weatherdb
             writeDatabase(this._dbWeather, "weather", this._logger);
@@ -143,12 +136,7 @@ export default class WeatherModule {
             weatherValues.weather.seasonValues.default = this.findWeather(
                 this._dbWeather.name
             );
-
-            modConfig.log.current &&
-                this._logger.log(
-                    `[DES] Weather is: ${this._dbWeather.name}`,
-                    LogTextColor.CYAN
-                );
+            this.logWeather();
         }
     }
 
@@ -162,13 +150,33 @@ export default class WeatherModule {
         // Confirm weatherdb has more raids left
         if (this._dbWeather.value > 0) {
             this._dbWeather.value--;
-            modConfig.log.value &&
-                this._logger.logWithColor(
-                    `[DES] ${this._dbWeather.value} raid(s) left for ${this._dbWeather.name}`,
-                    LogTextColor.CYAN
-                );
+            this.logWeatherRemaining();
         } else this.setWeather(weatherValues);
 
         writeDatabase(this._dbWeather, "weather", this._logger);
+    }
+
+    public logWeather(): void {
+        modConfig.log.current &&
+            this._logger.logWithColor(
+                `[DES] Weather is: ${this._dbWeather.name}`,
+                LogTextColor.CYAN
+            );
+    }
+
+    private logWeatherChange(): void {
+        modConfig.log.onChange &&
+            this._logger.logWithColor(
+                `[DES] The weather changed to: ${this._dbWeather.name}`,
+                LogTextColor.BLUE
+            );
+    }
+
+    private logWeatherRemaining(): void {
+        modConfig.log.value &&
+            this._logger.logWithColor(
+                `[DES] ${this._dbWeather.value} raid(s) left for ${this._dbWeather.name}`,
+                LogTextColor.CYAN
+            );
     }
 }
