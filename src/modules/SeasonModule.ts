@@ -121,6 +121,7 @@ export default class SeasonModule {
 
     private logSeasonRemaining(): void {
         modConfig.log.value &&
+            modConfig.modules.seasons.duration.enable &&
             this._logger.logWithColor(
                 `[DES] ${this._seasonDB.value} raid(s) left for ${this.season}`,
                 LogTextColor.CYAN

@@ -128,12 +128,24 @@ export default class WeatherModule {
             weatherValues.weather.seasonValues["default"] =
                 this.findWeather(weatherChoice);
 
+            weatherValues.weather.seasonValues["WINTER"] =
+                this.findWeather(weatherChoice);
+
             // Write changes to local weatherdb
             writeDatabase(this._dbWeather, "weather", this._logger);
             this.logWeatherChange();
         } else {
+            // Confirm weather type exists otherwise use first indexed type
+            if (!this._weatherTypes.includes(this._dbWeather.name)) {
+                this._dbWeather.name = this._weatherTypes[0];
+                writeDatabase(this._dbWeather, "weather", this._logger);
+            }
+
             // Enforce current values
-            weatherValues.weather.seasonValues.default = this.findWeather(
+            weatherValues.weather.seasonValues["default"] = this.findWeather(
+                this._dbWeather.name
+            );
+            weatherValues.weather.seasonValues["WINTER"] = this.findWeather(
                 this._dbWeather.name
             );
             this.logWeather();
@@ -174,6 +186,7 @@ export default class WeatherModule {
 
     private logWeatherRemaining(): void {
         modConfig.log.value &&
+            modConfig.modules.weather.duration.enable &&
             this._logger.logWithColor(
                 `[DES] ${this._dbWeather.value} raid(s) left for ${this._dbWeather.name}`,
                 LogTextColor.CYAN
