@@ -23,8 +23,9 @@ import type { DatabaseService } from "@spt/services/DatabaseService";
 
 // Fika
 import type { IFikaRaidCreateRequestData } from "@spt/models/fika/routes/raid/create/IFikaRaidCreateRequestData";
+import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 
-class DynamicEnvironmentSystem implements IPreSptLoadMod {
+class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     private _FikaHandler = new FikaHandler();
     private _logger: ILogger;
     private _configServer: ConfigServer;
@@ -41,27 +42,16 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
         this._logger = container.resolve<ILogger>("WinstonLogger");
         this._staticRouterModService =
             container.resolve<StaticRouterModService>("StaticRouterModService");
+        // Get pre-database
+        this._database = container.resolve<DatabaseService>("DatabaseService");
 
-        // Grab initial server config values
+        // Grab pre-database config values
         this._configServer = container.resolve<ConfigServer>("ConfigServer");
         this._weatherSeasonValues =
             this._configServer.getConfig<IWeatherConfig>(ConfigTypes.WEATHER);
         this._events = this._configServer.getConfig<ISeasonalEventConfig>(
             ConfigTypes.SEASONAL_EVENT
         );
-        this._database = container.resolve<DatabaseService>("DatabaseService");
-
-        // Enable modules
-        if (modConfig.enable) {
-            this._SeasonModule.enable(this._weatherSeasonValues, this._logger);
-            this._CalendarModule.enable(this._SeasonModule, this._logger);
-            this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
-            this._EventModule.enable(
-                this._database,
-                this._events,
-                this._logger
-            );
-        }
 
         if (!modConfig.enable) {
             this._logger.logWithColor(
@@ -69,6 +59,9 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                 LogTextColor.YELLOW
             );
         } else {
+            // Load pre-config setups
+            EventModule.preConfig(this._events, this._logger);
+
             // Set host UID for config value changing when fika is enabled
             this._staticRouterModService.registerStaticRouter(
                 "[DES] /fika/raid/create",
@@ -150,6 +143,20 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                     },
                 ],
                 "[DES] /client/weather"
+            );
+        }
+    }
+
+    public postDBLoad(container: DependencyContainer): void {
+        // Enable modules
+        if (modConfig.enable) {
+            this._SeasonModule.enable(this._weatherSeasonValues, this._logger);
+            this._CalendarModule.enable(this._SeasonModule, this._logger);
+            this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
+            this._EventModule.enable(
+                this._events,
+                this._database.getLocations(),
+                this._logger
             );
         }
     }

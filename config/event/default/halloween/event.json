@@ -1,0 +1,36 @@
+{
+    "enable": true,
+    "name": "HALLOWEEN",
+    "date": {
+        "isAllYear": false,
+        "month": {
+            "start": 10,
+            "end": 11
+        },
+        "day": {
+            "start": 1,
+            "end": 15
+        }
+    },
+    "settings": {
+        "useSanta": false,
+        "useZombies": true,
+        "useBotHostility": true,
+        "useBotAppearances": true,
+        "useEventGear": true,
+        "useEventLoot": true,
+        "useSummoningEvent": true,
+        "bots": {
+            "disableBosses": ["laboratory"],
+            "disableWaves": []
+        },
+        "hideout": {
+            "enableHalloween": true,
+            "enableChristmas": false
+        },
+        "location": {
+            "forceSeason": "AUTUMN",
+            "removeEntryRequirement": ["laboratory"]
+        }
+    }
+}

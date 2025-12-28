@@ -1,0 +1,36 @@
+{
+    "enable": true,
+    "name": "APRIL_FOOLS",
+    "date": {
+        "isAllYear": false,
+        "month": {
+            "start": 4,
+            "end": 4
+        },
+        "day": {
+            "start": 1,
+            "end": 7
+        }
+    },
+    "settings": {
+        "useSanta": true,
+        "useZombies": true,
+        "useBotHostility": true,
+        "useBotAppearances": true,
+        "useEventGear": true,
+        "useEventLoot": true,
+        "useSummoningEvent": true,
+        "bots": {
+            "disableBosses": ["laboratory"],
+            "disableWaves": []
+        },
+        "hideout": {
+            "enableHalloween": true,
+            "enableChristmas": true
+        },
+        "location": {
+            "forceSeason": "WINTER",
+            "removeEntryRequirement": ["laboratory"]
+        }
+    }
+}

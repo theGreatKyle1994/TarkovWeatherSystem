@@ -30,7 +30,8 @@
             }
         },
         "events": {
-            "enable": true
+            "enable": true,
+            "useCustom": false
         }
     }
 }

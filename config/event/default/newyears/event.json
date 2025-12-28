@@ -1,0 +1,36 @@
+{
+    "enable": true,
+    "name": "NEW_YEARS",
+    "date": {
+        "isAllYear": false,
+        "month": {
+            "start": 12,
+            "end": 1
+        },
+        "day": {
+            "start": 26,
+            "end": 15
+        }
+    },
+    "settings": {
+        "useSanta": true,
+        "useZombies": false,
+        "useBotHostility": false,
+        "useBotAppearances": true,
+        "useEventGear": true,
+        "useEventLoot": true,
+        "useSummoningEvent": false,
+        "bots": {
+            "disableBosses": [],
+            "disableWaves": []
+        },
+        "hideout": {
+            "enableHalloween": false,
+            "enableChristmas": false
+        },
+        "location": {
+            "forceSeason": "WINTER",
+            "removeEntryRequirement": []
+        }
+    }
+}

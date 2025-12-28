@@ -13,5 +13,8 @@
         "name": "JUN",
         "length": 30,
         "value": 1
+    },
+    "event": {
+        "name": "NONE"
     }
 }

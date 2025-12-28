@@ -1,0 +1,36 @@
+{
+    "enable": true,
+    "name": "CHRISTMAS",
+    "date": {
+        "isAllYear": false,
+        "month": {
+            "start": 11,
+            "end": 12
+        },
+        "day": {
+            "start": 16,
+            "end": 25
+        }
+    },
+    "settings": {
+        "useSanta": true,
+        "useZombies": false,
+        "useBotHostility": false,
+        "useBotAppearances": true,
+        "useEventGear": true,
+        "useEventLoot": true,
+        "useSummoningEvent": false,
+        "bots": {
+            "disableBosses": [],
+            "disableWaves": []
+        },
+        "hideout": {
+            "enableHalloween": false,
+            "enableChristmas": true
+        },
+        "location": {
+            "forceSeason": "WINTER",
+            "removeEntryRequirement": []
+        }
+    }
+}
