@@ -3,12 +3,6 @@ export interface TimeStampEntry {
     end: number;
 }
 
-export interface EventEntry {
-    enable: boolean;
-    month: TimeStampEntry;
-    day: TimeStampEntry;
-}
-
 export interface DurationEntry {
     enable: boolean;
     length: number;
@@ -35,11 +29,9 @@ export interface ModConfig {
         calendar: {
             enable: boolean;
             duration: DurationEntry;
-            events: {
-                enable: boolean;
-                xmas: EventEntry;
-                halloween: EventEntry;
-            };
+        };
+        events: {
+            enable: boolean;
         };
     };
 }

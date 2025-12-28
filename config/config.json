@@ -27,32 +27,10 @@
             "duration": {
                 "enable": true,
                 "length": 30
-            },
-            "events": {
-                "enable": true,
-                "xmas": {
-                    "enable": true,
-                    "month": {
-                        "start": 12,
-                        "end": 1
-                    },
-                    "day": {
-                        "start": 1,
-                        "end": 30
-                    }
-                },
-                "halloween": {
-                    "enable": true,
-                    "month": {
-                        "start": 10,
-                        "end": 11
-                    },
-                    "day": {
-                        "start": 1,
-                        "end": 30
-                    }
-                }
             }
+        },
+        "events": {
+            "enable": true
         }
     }
 }

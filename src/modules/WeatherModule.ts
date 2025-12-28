@@ -39,12 +39,12 @@ export default class WeatherModule {
         SPRING_EARLY: {},
     };
 
-    public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
+    public enable(weatherValues: IWeatherConfig, logger: ILogger): void {
         this._logger = logger;
 
         // Setup weather
         modConfig.modules.weather.enable
-            ? this.enableWeather(weatherSeasonValues)
+            ? this.enableWeather(weatherValues)
             : this._logger.logWithColor(
                   "[DES] Weather is disabled.",
                   LogTextColor.YELLOW

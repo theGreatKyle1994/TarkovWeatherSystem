@@ -22,12 +22,12 @@ export default class SeasonModule {
         return this._seasonDB.name as keyof typeof SeasonName;
     }
 
-    public enable(weatherSeasonValues: IWeatherConfig, logger: ILogger): void {
+    public enable(seasonValues: IWeatherConfig, logger: ILogger): void {
         this._logger = logger;
 
         // Setup season
         modConfig.modules.seasons.enable
-            ? this.enableSeasons(weatherSeasonValues)
+            ? this.enableSeasons(seasonValues)
             : this._logger.logWithColor(
                   "[DES] Season is disabled.",
                   LogTextColor.YELLOW

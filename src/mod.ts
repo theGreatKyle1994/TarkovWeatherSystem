@@ -6,6 +6,7 @@ import type { DependencyContainer } from "tsyringe";
 import WeatherModule from "./modules/WeatherModule";
 import SeasonModule from "./modules/SeasonModule";
 import CalendarModule from "./modules/CalendarModule";
+import EventModule from "./modules/EventModule";
 import FikaHandler from "./utilities/fikaHandler";
 
 // SPT
@@ -17,6 +18,8 @@ import type { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
 import type { ConfigServer } from "@spt/servers/ConfigServer";
 import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 import type { IEndLocalRaidRequestData } from "@spt/models/eft/match/IEndLocalRaidRequestData";
+import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEventConfig";
+import type { DatabaseService } from "@spt/services/DatabaseService";
 
 // Fika
 import type { IFikaRaidCreateRequestData } from "@spt/models/fika/routes/raid/create/IFikaRaidCreateRequestData";
@@ -30,7 +33,10 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     private _SeasonModule = new SeasonModule();
     private _WeatherModule = new WeatherModule();
     private _CalendarModule = new CalendarModule();
+    private _EventModule = new EventModule();
+    private _database: DatabaseService;
     private _weatherSeasonValues: IWeatherConfig;
+    private _events: ISeasonalEventConfig;
 
     public preSptLoad(container: DependencyContainer): void {
         this._logger = container.resolve<ILogger>("WinstonLogger");
@@ -92,7 +98,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                                 this._WeatherModule.decrementWeather(
                                     this._weatherSeasonValues
                                 );
-                                
+
                             return output;
                         },
                     },
@@ -133,12 +139,21 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
         this._configServer = container.resolve<ConfigServer>("ConfigServer");
         this._weatherSeasonValues =
             this._configServer.getConfig<IWeatherConfig>(ConfigTypes.WEATHER);
+        this._events = this._configServer.getConfig<ISeasonalEventConfig>(
+            ConfigTypes.SEASONAL_EVENT
+        );
+        this._database = container.resolve<DatabaseService>("DatabaseService");
 
         // Enable modules
         if (modConfig.enable) {
             this._SeasonModule.enable(this._weatherSeasonValues, this._logger);
             this._CalendarModule.enable(this._SeasonModule, this._logger);
             this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
+            this._EventModule.enable(
+                this._database,
+                this._events,
+                this._logger
+            );
         }
     }
 }
