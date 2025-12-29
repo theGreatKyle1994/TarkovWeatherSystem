@@ -12,6 +12,10 @@
             "duration": {
                 "enable": true,
                 "length": 14
+            },
+            "override": {
+                "enable": false,
+                "name": "SUMMER"
             }
         },
         "weather": {
@@ -20,6 +24,10 @@
             "duration": {
                 "enable": true,
                 "length": 3
+            },
+            "override": {
+                "enable": false,
+                "name": "SUNNY"
             }
         },
         "calendar": {
@@ -31,7 +39,11 @@
         },
         "events": {
             "enable": true,
-            "useCustom": false
+            "useCustom": false,
+            "override": {
+                "enable": false,
+                "name": "XMAS"
+            }
         }
     }
 }

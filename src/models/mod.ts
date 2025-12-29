@@ -8,6 +8,11 @@ export interface DurationEntry {
     length: number;
 }
 
+export interface OverrideEntry {
+    enable: boolean;
+    name: string;
+}
+
 export interface ModConfig {
     enable: boolean;
     log: {
@@ -20,11 +25,13 @@ export interface ModConfig {
             enable: boolean;
             useRandom: boolean;
             duration: DurationEntry;
+            override: OverrideEntry;
         };
         weather: {
             enable: boolean;
             useCustom: boolean;
             duration: DurationEntry;
+            override: OverrideEntry;
         };
         calendar: {
             enable: boolean;
@@ -33,6 +40,7 @@ export interface ModConfig {
         events: {
             enable: boolean;
             useCustom: boolean;
+            override: OverrideEntry;
         };
     };
 }

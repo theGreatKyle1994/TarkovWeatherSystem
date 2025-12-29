@@ -25,7 +25,6 @@ export interface EventConfig {
     enable: boolean;
     name: string;
     date: {
-        isAllYear: boolean;
         month: TimeStampEntry;
         day: TimeStampEntry;
     };
@@ -47,7 +46,8 @@ export interface EventConfig {
             enableChristmas: boolean;
         };
         location: {
-            forceSeason: keyof typeof SeasonName;
+            forceSeason: string;
+            forceWeather: string;
             removeEntryRequirement: string[];
         };
     };

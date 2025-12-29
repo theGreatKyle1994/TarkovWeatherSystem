@@ -2,7 +2,6 @@
     "enable": true,
     "name": "NEWYEARS",
     "date": {
-        "isAllYear": false,
         "month": {
             "start": 12,
             "end": 1

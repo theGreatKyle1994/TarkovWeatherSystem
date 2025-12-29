@@ -156,6 +156,9 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
             this._EventModule.enable(
                 this._events,
                 this._database.getLocations(),
+                this._CalendarModule,
+                this._SeasonModule,
+                this._WeatherModule,
                 this._logger
             );
         }

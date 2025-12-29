@@ -1,8 +1,7 @@
 {
     "enable": true,
     "name": "ZOMBIES",
-        "date": {
-        "isAllYear": true,
+    "date": {
         "month": {
             "start": 1,
             "end": 12

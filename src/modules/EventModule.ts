@@ -11,11 +11,17 @@ import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEvent
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import type { ILocations } from "@spt/models/spt/server/ILocations";
+import CalendarModule from "./CalendarModule";
+import SeasonModule from "./SeasonModule";
+import WeatherModule from "./WeatherModule";
 
 export default class EventModule {
     private _logger: ILogger;
     private _dbEvent: string = localDB.event;
     private _locations: ILocations;
+    private _CalendarModule: CalendarModule;
+    private _SeasonModule: SeasonModule;
+    private _WeatherModule: WeatherModule;
     private _eventNames: string[];
     private _events: Events = {};
 
@@ -37,10 +43,16 @@ export default class EventModule {
     public enable(
         eventValues: ISeasonalEventConfig,
         locations: ILocations,
+        CalendarModule: CalendarModule,
+        SeasonModule: SeasonModule,
+        WeatherModule: WeatherModule,
         logger: ILogger
     ): void {
         this._logger = logger;
         this._locations = locations;
+        this._CalendarModule = CalendarModule;
+        this._SeasonModule = SeasonModule;
+        this._WeatherModule = WeatherModule;
 
         // Setup events
         modConfig.modules.events.enable

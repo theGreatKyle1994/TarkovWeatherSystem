@@ -1,8 +1,7 @@
 {
     "enable": true,
-    "name": "CHRISTMAS",
+    "name": "XMAS",
     "date": {
-        "isAllYear": false,
         "month": {
             "start": 11,
             "end": 12

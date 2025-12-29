@@ -2,7 +2,6 @@
     "enable": true,
     "name": "HALLOWEEN",
     "date": {
-        "isAllYear": false,
         "month": {
             "start": 10,
             "end": 11

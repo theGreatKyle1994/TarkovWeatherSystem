@@ -2,7 +2,6 @@
     "enable": true,
     "name": "APRILFOOLS",
     "date": {
-        "isAllYear": false,
         "month": {
             "start": 4,
             "end": 4
