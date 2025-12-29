@@ -1,198 +1,198 @@
 {
     "appearance": {
         "usec": {
-            "Body": {
+            "body": {
                 "675fd6897a57e0b2a00e3405": 10
             },
-            "Feet": {
+            "feet": {
                 "675fd6b2f26b0db5f0060eb6": 10
             }
         },
         "bear": {
-            "Body": {
+            "body": {
                 "67599500a378f89a3e089b56": 10
             },
-            "Feet": {
+            "feet": {
                 "675994c9f7adb892bd080766": 10
             }
         }
     },
     "gear": {
         "bossgluhar": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 5
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 500,
                 "5a43957686f7742a2c2f11b0": 500
             }
         },
         "bossbully": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 120
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 150,
                 "5a43957686f7742a2c2f11b0": 150
             }
         },
         "bosskilla": {
-            "ArmorVest": {
+            "armorVest": {
                 "674d91ce6e862d5a95059ed6": 200
             },
-            "Headwear": {
+            "headwear": {
                 "6759af0f9c8a538dd70bfae6": 200
             }
         },
         "bossknight": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 1500
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "bosssanitar": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 600
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "bossboar": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 1
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 1,
                 "5a43957686f7742a2c2f11b0": 1
             }
         },
         "exusec": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 1200
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 500,
                 "5a43957686f7742a2c2f11b0": 500
             }
         },
         "followerbigpipe": {
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "followerbirdeye": {
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 1,
                 "5a43957686f7742a2c2f11b0": 1
             }
         },
         "followerbully": {
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 600,
                 "5a43957686f7742a2c2f11b0": 600
             }
         },
         "followerboar": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 250
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "followergluharassault": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 550
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 700,
                 "5a43957686f7742a2c2f11b0": 700
             }
         },
         "followergluharscout": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 5
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "followergluharsecurity": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 5
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "followerkojaniy": {
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 3,
                 "5a43957686f7742a2c2f11b0": 3
             }
         },
         "followersanitar": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 5
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 1,
                 "5a43957686f7742a2c2f11b0": 1
             }
         },
         "marksman": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 400
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 1400,
                 "5a43957686f7742a2c2f11b0": 1400
             }
         },
         "pmcbot": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 1200
             },
-            "Headwear": {
+            "headwear": {
                 "5a43943586f77416ad2f06e2": 600,
                 "5a43957686f7742a2c2f11b0": 600
             }
         },
         "sectantpriest": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 5
             }
         },
         "sectantwarrior": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 5
             }
         },
         "bear": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 30,
                 "675ac888803644528007b3f6": 30
             },
-            "Headwear": {
+            "headwear": {
                 "5a43957686f7742a2c2f11b0": 80,
                 "5a43943586f77416ad2f06e2": 80
             }
         },
         "usec": {
-            "FaceCover": {
+            "faceCover": {
                 "5c1a1e3f2e221602b66cc4c2": 30,
                 "675ac888803644528007b3f6": 30
             },
-            "Headwear": {
+            "headwear": {
                 "5a43957686f7742a2c2f11b0": 80,
                 "5a43943586f77416ad2f06e2": 80
             }

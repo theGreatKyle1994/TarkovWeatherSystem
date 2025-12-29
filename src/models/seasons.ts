@@ -17,7 +17,6 @@ export enum SeasonName {
     SPRING = "SPRING",
     AUTUMN_LATE = "AUTUMN_LATE",
     SPRING_EARLY = "SPRING_EARLY",
-    STORM = "STORM",
 }
 
 export const seasonOrder: (keyof typeof SeasonName)[] = [

@@ -16,17 +16,6 @@ export default class EventModule {
         // Disable any event detection
         eventValues.enableSeasonalEventDetection = false;
 
-        for (let key in eventValues.hostilitySettingsForEvent) {
-            if (key == "aprilFools")
-                logger.warning(
-                    JSON.stringify(
-                        eventValues.hostilitySettingsForEvent[key],
-                        null,
-                        2
-                    )
-                );
-        }
-
         for (let event of eventValues.events) {
             // Disable vanilla events
             event.enabled = false;
@@ -56,12 +45,10 @@ export default class EventModule {
     }
 
     private enableEvents(eventValues: ISeasonalEventConfig): void {
-        for (let loc in this._locations) {
-            let location: ILocation = this._locations[loc];
-            // this._logger.warning(loc);
-            // this._logger.warning(
-            //     JSON.stringify(location?.base?.Events?.Halloween2024, null, 2)
-            // );
+        for (let key of eventValues.events) {
+            this._logger.warning(
+                JSON.stringify(key.settings?.zombieSettings, null, 2)
+            );
         }
 
         this.setEvent(eventValues);

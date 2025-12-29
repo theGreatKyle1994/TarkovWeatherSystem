@@ -8,4 +8,5 @@ export interface Database {
     season: DBEntry;
     weather: DBEntry;
     calendar: DBEntry;
+    event: string;
 }

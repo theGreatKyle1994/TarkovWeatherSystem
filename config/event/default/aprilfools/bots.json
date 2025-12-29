@@ -1,22 +1,5 @@
 {
-    "appearance": {
-        "usec": {
-            "Body": {
-                "675fd6897a57e0b2a00e3405": 10
-            },
-            "Feet": {
-                "675fd6b2f26b0db5f0060eb6": 10
-            }
-        },
-        "bear": {
-            "Body": {
-                "67599500a378f89a3e089b56": 10
-            },
-            "Feet": {
-                "675994c9f7adb892bd080766": 10
-            }
-        }
-    },
+    "appearance": {},
     "gear": {
         "bossgluhar": {
             "FaceCover": {
