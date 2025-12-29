@@ -32,6 +32,7 @@ export interface ModConfig {
         };
         events: {
             enable: boolean;
+            useCustom: boolean;
         };
     };
 }
