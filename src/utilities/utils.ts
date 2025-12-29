@@ -14,7 +14,7 @@ export function writeDatabase(
 ): void {
     // Get previous db info
     const prevDB: Database = loadConfig<Database>(logger, "db/database");
-    
+
     // Merge old db with updated db
     const currentDB: Database = { ...prevDB, [dbIndex]: data };
 
@@ -38,14 +38,27 @@ export function loadConfig<ConfigType>(
         return JSON.parse(
             fs.readFileSync(
                 path.join(__dirname, `../../config/${filePath}.json`),
-                {
-                    encoding: "utf-8",
-                }
+                "utf-8"
             )
         );
     } catch {
         logger.warning(`[DES] Error reading /config/${filePath}.json.`);
     }
+}
+
+export function getFolderNames(logger: ILogger, subPath: string) {
+    let folderNames: string[];
+    // Grab all folder names for user defined names
+    try {
+        folderNames = fs.readdirSync(
+            path.join(__dirname, `../../config/${subPath}`),
+            "utf-8"
+        );
+    } catch {
+        logger.warning(`[DES] Error reading /config/${subPath} directory.`);
+    }
+
+    return folderNames;
 }
 
 export function loadConfigs<ConfigType = string>(
@@ -78,7 +91,7 @@ export function loadConfigs<ConfigType = string>(
 
     // Index variale for error tracking
     let index: number = -1;
-    
+
     // Gather all configs from path array
     try {
         for (let filePath of filePaths) {
@@ -90,7 +103,7 @@ export function loadConfigs<ConfigType = string>(
                             __dirname,
                             `../../config/${subPath}/${filePath}`
                         ),
-                        { encoding: "utf-8" }
+                        "utf-8"
                     )
                 )
             );
@@ -120,9 +133,7 @@ export function loadWeights(
         weightsConfig = JSON.parse(
             fs.readFileSync(
                 path.join(__dirname, `../../config/${subPath}/weights.json`),
-                {
-                    encoding: "utf-8",
-                }
+                "utf-8"
             )
         );
 

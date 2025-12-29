@@ -9,6 +9,18 @@ import type {
     IBossLocationSpawn,
 } from "@spt/models/eft/common/ILocationBase";
 
+export interface Event {
+    config: EventConfig;
+    bots?: BotConfig;
+    hostility?: HostilityConfig;
+    summon?: SpawnsConfig;
+    spawns?: SpawnsConfig;
+    zombies?: ZombiesConfig;
+    santa?: SantaConfig;
+}
+
+export type Events = Record<string, Event>;
+
 export interface EventConfig {
     enable: boolean;
     name: string;
@@ -24,6 +36,7 @@ export interface EventConfig {
         useBotAppearances: boolean;
         useEventGear: boolean;
         useEventLoot: boolean;
+        useCustomSpawns: boolean;
         useSummoningEvent: boolean;
         bots: {
             disableBosses: string[];
@@ -96,7 +109,7 @@ export interface HostilityConfig {
     default: IAdditionalHostilitySettings[];
 }
 
-export interface SpawnConfig {
+export interface SpawnsConfig {
     bigmap: Record<string, IBossLocationSpawn[]>;
     factory4_day: Record<string, IBossLocationSpawn[]>;
     factory4_night: Record<string, IBossLocationSpawn[]>;

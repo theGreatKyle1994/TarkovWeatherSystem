@@ -1,6 +1,6 @@
 {
     "enable": true,
-    "name": "NEW_YEARS",
+    "name": "NEWYEARS",
     "date": {
         "isAllYear": false,
         "month": {
@@ -20,6 +20,7 @@
         "useEventGear": true,
         "useEventLoot": true,
         "useSummoningEvent": false,
+        "useCustomSpawns": false,
         "bots": {
             "disableBosses": [],
             "disableWaves": []

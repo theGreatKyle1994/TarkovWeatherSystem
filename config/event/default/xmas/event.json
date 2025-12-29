@@ -20,6 +20,7 @@
         "useEventGear": true,
         "useEventLoot": true,
         "useSummoningEvent": false,
+        "useCustomSpawns": false,
         "bots": {
             "disableBosses": [],
             "disableWaves": []

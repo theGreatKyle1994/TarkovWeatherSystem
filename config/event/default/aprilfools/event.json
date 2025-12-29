@@ -1,6 +1,6 @@
 {
     "enable": true,
-    "name": "APRIL_FOOLS",
+    "name": "APRILFOOLS",
     "date": {
         "isAllYear": false,
         "month": {
@@ -20,6 +20,7 @@
         "useEventGear": true,
         "useEventLoot": true,
         "useSummoningEvent": true,
+        "useCustomSpawns": true,
         "bots": {
             "disableBosses": ["laboratory"],
             "disableWaves": []
