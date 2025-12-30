@@ -99,18 +99,14 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                             if (isHost && modConfig.modules.seasons.enable) {
                                 !modConfig.modules.calendar.enable &&
                                 modConfig.modules.seasons.duration.enable
-                                    ? this._SeasonModule.decrementSeason(
-                                          this._weatherSeasonValues
-                                      )
+                                    ? this._SeasonModule.decrementSeason()
                                     : this._CalendarModule.incrementCalendar();
                             }
 
                             // Check if weather module is enabled
                             modConfig.modules.weather.enable &&
                                 modConfig.modules.weather.duration.enable &&
-                                this._WeatherModule.decrementWeather(
-                                    this._weatherSeasonValues
-                                );
+                                this._WeatherModule.decrementWeather();
 
                             return output;
                         },
@@ -128,15 +124,11 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                         action: async (_, __, ___, output) => {
                             // Check if season module is enabled
                             modConfig.modules.seasons.enable &&
-                                this._SeasonModule.setSeason(
-                                    this._weatherSeasonValues
-                                );
-
+                                this._SeasonModule.setSeason();
+                                
                             // Check if weather module is enabled
                             modConfig.modules.weather.enable &&
-                                this._WeatherModule.setWeather(
-                                    this._weatherSeasonValues
-                                );
+                                this._WeatherModule.setWeather();
 
                             return output;
                         },

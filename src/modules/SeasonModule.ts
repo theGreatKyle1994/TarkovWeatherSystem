@@ -17,6 +17,7 @@ import { Season } from "@spt/models/enums/Season";
 export default class SeasonModule {
     private _logger: ILogger;
     private _seasonDB: DBEntry = localDB.season;
+    private _seasonValues: IWeatherConfig;
 
     get season(): keyof typeof SeasonName {
         return this._seasonDB.name as keyof typeof SeasonName;
@@ -24,30 +25,37 @@ export default class SeasonModule {
 
     public enable(seasonValues: IWeatherConfig, logger: ILogger): void {
         this._logger = logger;
+        this._seasonValues = seasonValues;
 
         // Setup season
         modConfig.modules.seasons.enable
-            ? this.enableSeasons(seasonValues)
+            ? this.enableSeasons()
             : this._logger.logWithColor(
                   "[DES] Season is disabled.",
                   LogTextColor.YELLOW
               );
     }
 
-    private enableSeasons(seasonValues: IWeatherConfig): void {
+    private enableSeasons(): void {
         // Setup season dates to allow any season
-        seasonValues.seasonDates = seasonDates;
+        this._seasonValues.seasonDates = seasonDates;
 
         // Set initial season if calendar is disabled
         if (!modConfig.modules.calendar.enable) {
-            this.setSeason(seasonValues);
-            this.logSeasonRemaining();
+            this.setSeason();
+            if (!modConfig.modules.seasons.override.enable)
+                this.logSeasonRemaining();
         }
     }
 
-    public setSeason(seasonValues: IWeatherConfig): void {
+    public setSeason(): void {
         // Check if season change is needed
-        if (this._seasonDB.value <= 0) {
+        if (modConfig.modules.seasons.override.enable)
+            this.forceSeason(
+                modConfig.modules.seasons.override
+                    .name as keyof typeof SeasonName
+            );
+        else if (this._seasonDB.value <= 0) {
             let seasonChoice = "";
 
             // Use random seasons
@@ -66,22 +74,26 @@ export default class SeasonModule {
             this._seasonDB.value = this._seasonDB.length;
 
             // Set chosen season to game database
-            seasonValues.overrideSeason = Season[this.season];
+            this._seasonValues.overrideSeason = Season[this.season];
 
             writeDatabase(this._seasonDB, "season", this._logger);
             this.logSeasonChange();
         } else {
             // Enforce current values
-            seasonValues.overrideSeason = Season[this.season];
+            this._seasonValues.overrideSeason = Season[this.season];
             this.logSeason();
         }
     }
 
     public forceSeason(seasonName: keyof typeof SeasonName): void {
-        // Manually set season to bypass internal system
+        // Manually set season
         this._seasonDB.name = seasonName;
         writeDatabase(this._seasonDB, "season", this._logger);
-        this.logSeasonChange();
+
+        // Set chosen season to game database
+        this._seasonValues.overrideSeason = Season[this.season];
+
+        this.logSeasonChangeForced();
     }
 
     public calcNewSeason(): void {
@@ -93,14 +105,14 @@ export default class SeasonModule {
         this.forceSeason(newSeason);
     }
 
-    public decrementSeason(seasonValues: IWeatherConfig): void {
+    public decrementSeason(): void {
         // Confirm seasondb has more raids left
         if (this._seasonDB.value > 0) {
             this._seasonDB.value--;
             this.logSeasonRemaining();
             writeDatabase(this._seasonDB, "season", this._logger);
             // Or set new season data
-        } else this.setSeason(seasonValues);
+        } else this.setSeason();
     }
 
     public logSeason(): void {
@@ -116,6 +128,14 @@ export default class SeasonModule {
             this._logger.logWithColor(
                 `[DES] The season changed to: ${this.season}`,
                 LogTextColor.BLUE
+            );
+    }
+
+    private logSeasonChangeForced(): void {
+        modConfig.log.onChange &&
+            this._logger.logWithColor(
+                `[DES] Forced season: ${this.season}`,
+                LogTextColor.YELLOW
             );
     }
 

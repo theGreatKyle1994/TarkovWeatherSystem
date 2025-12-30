@@ -28,6 +28,7 @@ export default class WeatherModule {
     private _logger: ILogger;
     private _dbWeather: DBEntry = localDB.weather;
     private _dbSeason: DBEntry = localDB.season;
+    private _weatherValues: IWeatherConfig;
     private _weatherConfigs: WeatherCustomConfig[] = [];
     private _weatherTypes: string[] = [];
     private _weatherWeights: WeatherWeightsConfig = {
@@ -41,17 +42,18 @@ export default class WeatherModule {
 
     public enable(weatherValues: IWeatherConfig, logger: ILogger): void {
         this._logger = logger;
+        this._weatherValues = weatherValues;
 
         // Setup weather
         modConfig.modules.weather.enable
-            ? this.enableWeather(weatherValues)
+            ? this.enableWeather()
             : this._logger.logWithColor(
                   "[DES] Weather is disabled.",
                   LogTextColor.YELLOW
               );
     }
 
-    private enableWeather(weatherValues: IWeatherConfig): void {
+    private enableWeather(): void {
         let weatherCount = 0;
 
         // Load default weather
@@ -102,13 +104,17 @@ export default class WeatherModule {
             this._weatherTypes.push(name);
 
         // Set initial weather
-        this.setWeather(weatherValues);
-        this.logWeatherRemaining();
+        this.setWeather();
+
+        if (!modConfig.modules.weather.override.enable)
+            this.logWeatherRemaining();
     }
 
-    public setWeather(weatherValues: IWeatherConfig): void {
+    public setWeather(): void {
         // Check if weather change is needed
-        if (this._dbWeather.value <= 0) {
+        if (modConfig.modules.weather.override.enable)
+            this.forceWeather(modConfig.modules.weather.override.name);
+        else if (this._dbWeather.value <= 0) {
             // Update local season values
             this._dbSeason = loadConfig<Database>(
                 this._logger,
@@ -125,31 +131,43 @@ export default class WeatherModule {
             this._dbWeather.value = this._dbWeather.length;
 
             // Set chosen weather to game database
-            weatherValues.weather.seasonValues["default"] =
+            this._weatherValues.weather.seasonValues["default"] =
                 this.findWeather(weatherChoice);
-
-            weatherValues.weather.seasonValues["WINTER"] =
+            this._weatherValues.weather.seasonValues["WINTER"] =
                 this.findWeather(weatherChoice);
 
             // Write changes to local weatherdb
             writeDatabase(this._dbWeather, "weather", this._logger);
             this.logWeatherChange();
         } else {
-            // Confirm weather type exists otherwise use first indexed type
-            if (!this._weatherTypes.includes(this._dbWeather.name)) {
-                this._dbWeather.name = this._weatherTypes[0];
-                writeDatabase(this._dbWeather, "weather", this._logger);
-            }
+            // MOVE TO VALIDATE AREA
+            // // Confirm weather type exists otherwise use first indexed type
+            // if (!this._weatherTypes.includes(this._dbWeather.name)) {
+            //     this._dbWeather.name = this._weatherTypes[0];
+            //     writeDatabase(this._dbWeather, "weather", this._logger);
+            // }
 
             // Enforce current values
-            weatherValues.weather.seasonValues["default"] = this.findWeather(
-                this._dbWeather.name
-            );
-            weatherValues.weather.seasonValues["WINTER"] = this.findWeather(
-                this._dbWeather.name
-            );
+            this._weatherValues.weather.seasonValues["default"] =
+                this.findWeather(this._dbWeather.name);
+            this._weatherValues.weather.seasonValues["WINTER"] =
+                this.findWeather(this._dbWeather.name);
             this.logWeather();
         }
+    }
+
+    public forceWeather(weatherName: string): void {
+        // Manually set weather
+        this._dbWeather.name = weatherName;
+        writeDatabase(this._dbWeather, "weather", this._logger);
+
+        // Set chosen weather to game database
+        this._weatherValues.weather.seasonValues["default"] =
+            this.findWeather(weatherName);
+        this._weatherValues.weather.seasonValues["WINTER"] =
+            this.findWeather(weatherName);
+
+        this.logSeasonChangeForced();
     }
 
     private findWeather(target: string): ISeasonalValues {
@@ -158,14 +176,14 @@ export default class WeatherModule {
                 return this._weatherConfigs[i].weather;
     }
 
-    public decrementWeather(weatherValues: IWeatherConfig): void {
+    public decrementWeather(): void {
         // Confirm weatherdb has more raids left
         if (this._dbWeather.value > 0) {
             this._dbWeather.value--;
             this.logWeatherRemaining();
             writeDatabase(this._dbWeather, "weather", this._logger);
             // Or set new weather data
-        } else this.setWeather(weatherValues);
+        } else this.setWeather();
     }
 
     public logWeather(): void {
@@ -181,6 +199,14 @@ export default class WeatherModule {
             this._logger.logWithColor(
                 `[DES] The weather changed to: ${this._dbWeather.name}`,
                 LogTextColor.BLUE
+            );
+    }
+
+    private logSeasonChangeForced(): void {
+        modConfig.log.onChange &&
+            this._logger.logWithColor(
+                `[DES] Forced weather: ${this._dbWeather.name}`,
+                LogTextColor.YELLOW
             );
     }
 
