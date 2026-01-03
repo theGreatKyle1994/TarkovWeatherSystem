@@ -87,9 +87,9 @@ export default class CalendarModule {
             this._layouts[this._SeasonModule.season];
 
         // Check month and day range for season update
-        (!this.checkMonthRange(season) ||
-            (this.isFinalMonth(season) && !this.checkDayRange(season))) &&
-            this._SeasonModule.cycleSeason();
+        // (!this.checkMonthRange(season) ||
+        //     (this.isFinalMonth(season) && !this.checkDayRange(season))) &&
+        //     this._SeasonModule.cycleSeason();
     }
 
     private checkMonthRange(season: SeasonLayoutEntry): boolean {

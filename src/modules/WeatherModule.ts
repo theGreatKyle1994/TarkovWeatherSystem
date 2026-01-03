@@ -212,7 +212,7 @@ export default class WeatherModule {
 
     private logWeatherRemaining(): void {
         modConfig.log.remaining &&
-            modConfig.modules.weather.duration.enable &&
+            !modConfig.modules.weather.override.enable &&
             this._logger.logWithColor(
                 `[DES] ${this._dbWeather.value} raid(s) left for ${this._dbWeather.name}`,
                 LogTextColor.CYAN

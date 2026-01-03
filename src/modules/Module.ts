@@ -30,55 +30,51 @@ export default abstract class Module {
     }
 
     protected configure(isDecrementing: boolean = true): void {
-        if (this._moduleConfig.override.enable) this.forceDBChange();
-        else if (this._moduleConfig.duration.enable) {
-            if (
-                isDecrementing
-                    ? this._localDB.value <= 0
-                    : this._localDB.value >= this._localDB.length
-            ) {
-                this.cycleDB();
-            } else {
-                this.enforceDB();
-                this.logRemaining();
-            }
-        } else {
-            this.enforceDB();
-        }
+        if (this._moduleConfig.override.enable) {
+            this.forceDBChange();
+            return;
+        } else if (this.checkUpdate(isDecrementing)) this.cycleDB();
+        else this.enforceDB();
+        this.logRemaining();
     }
 
     public updateDB(isDecrementing: boolean = true): void {
-        if (this._moduleConfig.duration.enable) {
-            if (
-                isDecrementing
-                    ? this._localDB.value > 0
-                    : this._localDB.value < this._localDB.length
-            ) {
-                isDecrementing ? this._localDB.value-- : this._localDB.value++;
-                writeDatabase(this._localDB, this._moduleName, this._logger);
-                this.logRemaining();
-            } else this.cycleDB();
-        } else this.enforceDB();
+        if (this._moduleConfig.override.enable) {
+            this.enforceDB();
+            return;
+        } else {
+            isDecrementing ? this._localDB.value-- : this._localDB.value++;
+            if (this.checkUpdate(isDecrementing)) this.cycleDB();
+            this.logRemaining();
+        }
+    }
+
+    private checkUpdate(isDecrementing: boolean): boolean {
+        return isDecrementing
+            ? this._localDB.value <= 0
+            : this._localDB.value >= this._localDB.length;
     }
 
     protected cycleDB(newValue?: string): void {
         if (newValue) {
             this._localDB.name = newValue;
-            this._localDB.value = this._localDB.length;
+            this._localDB.value = this._moduleConfig.duration;
             writeDatabase(this._localDB, this._moduleName, this._logger);
             this.logChange();
         }
     }
 
-    protected enforceDB(): void {
-        this.logCurrent();
-    }
-
     public forceDBChange(
         newValue: string = this._moduleConfig.override.name
     ): void {
-        this._localDB.name = newValue;
-        this.logForced();
+        if (newValue) {
+            this._localDB.name = newValue;
+            this.logForced();
+        }
+    }
+
+    protected enforceDB(): void {
+        this.logCurrent();
     }
 
     public log(
@@ -100,13 +96,12 @@ export default abstract class Module {
         this._modConfig.log.change &&
             this._logger.logWithColor(
                 `${this._modName} The ${this._moduleName} changed to: ${this._localDB.name}.`,
-                LogTextColor.BLUE
+                LogTextColor.GREEN
             );
     }
 
     public logRemaining(): void {
         this._modConfig.log.remaining &&
-            this._moduleConfig.duration.enable &&
             this._logger.logWithColor(
                 `${this._modName} ${this._localDB.value} raid(s) left for ${this._localDB.name}.`,
                 LogTextColor.CYAN
@@ -116,7 +111,7 @@ export default abstract class Module {
     public logDisabled(): void {
         this._logger.logWithColor(
             `${this._modName} Module: ${this._moduleName} is disabled.`,
-            LogTextColor.YELLOW
+            LogTextColor.RED
         );
     }
 

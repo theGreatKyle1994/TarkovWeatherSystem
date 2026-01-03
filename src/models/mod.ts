@@ -3,11 +3,6 @@ export interface TimeStampEntry {
     end: number;
 }
 
-export interface DurationEntry {
-    enable: boolean;
-    length: number;
-}
-
 export interface OverrideEntry {
     enable: boolean;
     name: string;
@@ -17,7 +12,7 @@ export interface ModEntry {
     enable: boolean;
     useRandom?: boolean;
     useCustom?: boolean;
-    duration?: DurationEntry;
+    duration?: number;
     override?: OverrideEntry;
 }
 

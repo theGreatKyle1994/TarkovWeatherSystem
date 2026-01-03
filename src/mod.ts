@@ -110,7 +110,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
 
                             // Check if weather module is enabled
                             modConfig.modules.weather.enable &&
-                                modConfig.modules.weather.duration.enable &&
+                                !modConfig.modules.weather.override.enable &&
                                 this._WeatherModule.decrementWeather();
 
                             return output;

@@ -9,10 +9,7 @@
         "season": {
             "enable": true,
             "useRandom": false,
-            "duration": {
-                "enable": true,
-                "length": 14
-            },
+            "duration": 14,
             "override": {
                 "enable": false,
                 "name": "SUMMER"
@@ -21,10 +18,7 @@
         "weather": {
             "enable": true,
             "useCustom": false,
-            "duration": {
-                "enable": true,
-                "length": 3
-            },
+            "duration": 3,
             "override": {
                 "enable": false,
                 "name": "SUNNY"
@@ -32,10 +26,7 @@
         },
         "calendar": {
             "enable": true,
-            "duration": {
-                "enable": true,
-                "length": 30
-            }
+            "duration": 30
         },
         "event": {
             "enable": true,
