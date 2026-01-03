@@ -30,7 +30,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     private _logger: ILogger;
     private _configServer: ConfigServer;
     private _staticRouterModService: StaticRouterModService;
-    private _SeasonModule = new SeasonModule();
+    private _SeasonModule: SeasonModule;
     private _WeatherModule = new WeatherModule();
     private _CalendarModule = new CalendarModule();
     private _EventModule = new EventModule();
@@ -61,6 +61,12 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
         } else {
             // Load pre-config setups
             EventModule.preConfig(this._events, this._logger);
+
+            // Instatiate Modules
+            this._SeasonModule = new SeasonModule(
+                this._weatherSeasonValues,
+                this._logger
+            );
 
             // Set host UID for config value changing when fika is enabled
             this._staticRouterModService.registerStaticRouter(
@@ -96,10 +102,9 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                             const isHost = this._FikaHandler.isHost(UID);
 
                             // Choose between using season or calendar functionality
-                            if (isHost && modConfig.modules.seasons.enable) {
-                                !modConfig.modules.calendar.enable &&
-                                modConfig.modules.seasons.duration.enable
-                                    ? this._SeasonModule.decrementSeason()
+                            if (isHost && modConfig.modules.season.enable) {
+                                !modConfig.modules.calendar.enable
+                                    ? this._SeasonModule.updateDB()
                                     : this._CalendarModule.incrementCalendar();
                             }
 
@@ -114,35 +119,12 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                 ],
                 "[DES] /client/match/local/end"
             );
-
-            // Generate weather and season values
-            this._staticRouterModService.registerStaticRouter(
-                "[DES] /client/weather",
-                [
-                    {
-                        url: "/client/weather",
-                        action: async (_, __, ___, output) => {
-                            // Check if season module is enabled
-                            modConfig.modules.seasons.enable &&
-                                this._SeasonModule.setSeason();
-                                
-                            // Check if weather module is enabled
-                            modConfig.modules.weather.enable &&
-                                this._WeatherModule.setWeather();
-
-                            return output;
-                        },
-                    },
-                ],
-                "[DES] /client/weather"
-            );
         }
     }
 
     public postDBLoad(container: DependencyContainer): void {
-        // Enable modules
         if (modConfig.enable) {
-            this._SeasonModule.enable(this._weatherSeasonValues, this._logger);
+            this._SeasonModule.enable();
             this._CalendarModule.enable(this._SeasonModule, this._logger);
             this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
             this._EventModule.enable(

@@ -195,7 +195,7 @@ export default class WeatherModule {
     }
 
     private logWeatherChange(): void {
-        modConfig.log.onChange &&
+        modConfig.log.change &&
             this._logger.logWithColor(
                 `[DES] The weather changed to: ${this._dbWeather.name}`,
                 LogTextColor.BLUE
@@ -203,7 +203,7 @@ export default class WeatherModule {
     }
 
     private logSeasonChangeForced(): void {
-        modConfig.log.onChange &&
+        modConfig.log.change &&
             this._logger.logWithColor(
                 `[DES] Forced weather: ${this._dbWeather.name}`,
                 LogTextColor.YELLOW
@@ -211,7 +211,7 @@ export default class WeatherModule {
     }
 
     private logWeatherRemaining(): void {
-        modConfig.log.value &&
+        modConfig.log.remaining &&
             modConfig.modules.weather.duration.enable &&
             this._logger.logWithColor(
                 `[DES] ${this._dbWeather.value} raid(s) left for ${this._dbWeather.name}`,

@@ -9,7 +9,7 @@ import type { ILogger } from "@spt/models/spt/utils/ILogger";
 
 export function writeDatabase(
     data: object,
-    dbIndex: string,
+    dbIndex: keyof Database,
     logger: ILogger
 ): void {
     // Get previous db info

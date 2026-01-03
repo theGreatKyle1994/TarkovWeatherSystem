@@ -2,11 +2,11 @@
     "enable": true,
     "log": {
         "current": true,
-        "onChange": true,
-        "value": true
+        "change": true,
+        "remaining": true
     },
     "modules": {
-        "seasons": {
+        "season": {
             "enable": true,
             "useRandom": false,
             "duration": {
@@ -37,7 +37,7 @@
                 "length": 30
             }
         },
-        "events": {
+        "event": {
             "enable": true,
             "useCustom": false,
             "override": {

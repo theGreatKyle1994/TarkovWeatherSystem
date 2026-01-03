@@ -31,7 +31,7 @@ export default class CalendarModule {
         // Setup calendar
         if (modConfig.modules.calendar.enable) {
             // Season module is required for calendar functionality
-            !modConfig.modules.seasons.enable
+            !modConfig.modules.season.enable
                 ? this._logger.logWithColor(
                       "[DES] Seasons are disabled. They must be enabled to use the calendar module.",
                       LogTextColor.YELLOW
@@ -63,7 +63,7 @@ export default class CalendarModule {
             writeDatabase(this._calendarDB, "calendar", this._logger);
             this.logDateChange();
         } else {
-            this._SeasonModule.logSeason();
+            this._SeasonModule.logCurrent();
             this.logDate();
         }
         // Determine if season change is needed
@@ -89,7 +89,7 @@ export default class CalendarModule {
         // Check month and day range for season update
         (!this.checkMonthRange(season) ||
             (this.isFinalMonth(season) && !this.checkDayRange(season))) &&
-            this._SeasonModule.calcNewSeason();
+            this._SeasonModule.cycleSeason();
     }
 
     private checkMonthRange(season: SeasonLayoutEntry): boolean {
@@ -126,7 +126,7 @@ export default class CalendarModule {
     }
 
     public logDate(): void {
-        modConfig.log.value &&
+        modConfig.log.current &&
             this._logger.logWithColor(
                 `[DES] Date is: ${this._calendarDB.name} - ${this._calendarDB.value}.`,
                 LogTextColor.CYAN
@@ -134,7 +134,7 @@ export default class CalendarModule {
     }
 
     private logDateChange(): void {
-        modConfig.log.onChange &&
+        modConfig.log.change &&
             this._logger.logWithColor(
                 `[DES] Date changed to: ${this._calendarDB.name} - ${this._calendarDB.value}.`,
                 LogTextColor.BLUE

@@ -5,6 +5,7 @@ import localDB from "../../config/db/database.json";
 // General
 import type { Events, EventConfig } from "../models/event";
 import { getFolderNames, loadConfig } from "../utilities/utils";
+import type { DBEntry } from "../models/database";
 
 // SPT
 import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEventConfig";
@@ -17,7 +18,7 @@ import WeatherModule from "./WeatherModule";
 
 export default class EventModule {
     private _logger: ILogger;
-    private _dbEvent: string = localDB.event;
+    private _dbEvent: DBEntry = localDB.event;
     private _locations: ILocations;
     private _CalendarModule: CalendarModule;
     private _SeasonModule: SeasonModule;
@@ -55,7 +56,7 @@ export default class EventModule {
         this._WeatherModule = WeatherModule;
 
         // Setup events
-        modConfig.modules.events.enable
+        modConfig.modules.event.enable
             ? this.enableEvents(eventValues)
             : this._logger.logWithColor(
                   "[DES] Events are disabled.",
@@ -84,7 +85,7 @@ export default class EventModule {
             LogTextColor.GREEN
         );
 
-        if (modConfig.modules.events.useCustom) {
+        if (modConfig.modules.event.useCustom) {
             folderNames = getFolderNames(this._logger, "event/custom");
 
             // Get custom events
@@ -156,8 +157,8 @@ export default class EventModule {
     }
 
     private logEventChange(): void {
-        if (modConfig.log.onChange) {
-            const isNone = this._dbEvent === "NONE";
+        if (modConfig.log.change) {
+            const isNone = this._dbEvent.name === "NONE";
             this._logger.logWithColor(
                 isNone
                     ? `[DES] Event: ${this._dbEvent} has ended.`

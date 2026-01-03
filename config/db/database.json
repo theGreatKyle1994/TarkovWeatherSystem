@@ -14,5 +14,5 @@
         "length": 30,
         "value": 1
     },
-    "event": "NONE"
+    "event": { "name": "NONE" }
 }

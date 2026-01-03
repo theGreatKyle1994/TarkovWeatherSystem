@@ -13,34 +13,25 @@ export interface OverrideEntry {
     name: string;
 }
 
+export interface ModEntry {
+    enable: boolean;
+    useRandom?: boolean;
+    useCustom?: boolean;
+    duration?: DurationEntry;
+    override?: OverrideEntry;
+}
+
 export interface ModConfig {
     enable: boolean;
     log: {
         current: boolean;
-        onChange: boolean;
+        change: boolean;
         remaining: boolean;
     };
     modules: {
-        seasons: {
-            enable: boolean;
-            useRandom: boolean;
-            duration: DurationEntry;
-            override: OverrideEntry;
-        };
-        weather: {
-            enable: boolean;
-            useCustom: boolean;
-            duration: DurationEntry;
-            override: OverrideEntry;
-        };
-        calendar: {
-            enable: boolean;
-            duration: DurationEntry;
-        };
-        events: {
-            enable: boolean;
-            useCustom: boolean;
-            override: OverrideEntry;
-        };
+        season: ModEntry;
+        weather: ModEntry;
+        calendar: ModEntry;
+        event: ModEntry;
     };
 }
