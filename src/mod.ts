@@ -55,7 +55,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                 LogTextColor.YELLOW
             );
         else {
-            // Instatiate Modules
+            // Instantiate Modules
             this._SeasonModule = new SeasonModule(
                 this._weatherSeasonValues,
                 this._logger
