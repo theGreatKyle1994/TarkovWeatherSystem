@@ -13,6 +13,7 @@ import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 export default abstract class Module {
     protected readonly _modName: string = "[DES]";
     protected readonly _moduleName: keyof Database;
+    protected _isDecrementing: boolean = true;
     protected readonly _logger: ILogger;
     protected readonly _modConfig: ModConfig = modConfig;
     protected readonly _moduleConfig: ModEntry;
@@ -29,37 +30,41 @@ export default abstract class Module {
         this._moduleConfig.enable ? this.configure() : this.logDisabled();
     }
 
-    protected configure(isDecrementing: boolean = true): void {
+    protected configure(): void {
         if (this._moduleConfig.override.enable) {
             this.forceDBChange();
             return;
-        } else if (this.checkUpdate(isDecrementing)) this.cycleDB();
+        } else if (this.checkUpdate()) this.cycleDB();
         else this.enforceDB();
         this.logRemaining();
     }
 
-    public updateDB(isDecrementing: boolean = true): void {
+    public updateDB(): void {
         if (this._moduleConfig.override.enable) {
             this.enforceDB();
             return;
         } else {
-            isDecrementing ? this._localDB.value-- : this._localDB.value++;
-            if (this.checkUpdate(isDecrementing)) this.cycleDB();
+            this._isDecrementing
+                ? this._localDB.value--
+                : this._localDB.value++;
+            if (this.checkUpdate()) this.cycleDB();
             else writeDatabase(this._localDB, this._moduleName, this._logger);
             this.logRemaining();
         }
     }
 
-    private checkUpdate(isDecrementing: boolean): boolean {
-        return isDecrementing
+    private checkUpdate(): boolean {
+        return this._isDecrementing
             ? this._localDB.value <= 0
-            : this._localDB.value >= this._localDB.length;
+            : this._localDB.value > this._localDB.length;
     }
 
     protected cycleDB(newValue?: string): void {
         if (newValue) {
             this._localDB.name = newValue;
-            this._localDB.value = this._moduleConfig.duration;
+            this._localDB.value = this._isDecrementing
+                ? this._moduleConfig.duration
+                : 1;
             this._localDB.length = this._moduleConfig.duration;
             writeDatabase(this._localDB, this._moduleName, this._logger);
             this.logChange();
@@ -86,41 +91,67 @@ export default abstract class Module {
         this._logger.logWithColor(`${this._modName} ${logMessage}`, color);
     }
 
-    public logCurrent(): void {
+    public logCurrent(logMessage?: string): void {
         this._modConfig.log.current &&
             this._logger.logWithColor(
-                `${this._modName} Current ${this._moduleName} is: ${this._localDB.name}.`,
+                `${this._modName} ${
+                    logMessage
+                        ? logMessage
+                        : `Current ${this._moduleName} is: ${this._localDB.name}.`
+                }`,
                 LogTextColor.CYAN
             );
     }
 
-    public logChange(): void {
+    public logChange(logMessage?: string): void {
         this._modConfig.log.change &&
             this._logger.logWithColor(
-                `${this._modName} The ${this._moduleName} changed to: ${this._localDB.name}.`,
+                `${this._modName} ${
+                    logMessage
+                        ? logMessage
+                        : `The ${this._moduleName} changed to: ${this._localDB.name}.`
+                }`,
                 LogTextColor.GREEN
             );
     }
 
-    public logRemaining(): void {
+    public logRemaining(logMessage?: string): void {
         this._modConfig.log.remaining &&
             this._logger.logWithColor(
-                `${this._modName} ${this._localDB.value} raid(s) left for ${this._localDB.name}.`,
+                `${this._modName} ${
+                    logMessage
+                        ? logMessage
+                        : `${
+                              this._isDecrementing
+                                  ? this._localDB.value
+                                  : this._localDB.length -
+                                    this._localDB.value +
+                                    1
+                          } raid(s) left for ${this._localDB.name}.`
+                } `,
                 LogTextColor.CYAN
             );
     }
 
-    public logDisabled(): void {
+    public logDisabled(logMessage?: string): void {
         this._logger.logWithColor(
-            `${this._modName} Module: ${this._moduleName} is disabled.`,
+            `${this._modName} ${
+                logMessage
+                    ? logMessage
+                    : `Module: ${this._moduleName} is disabled.`
+            }`,
             LogTextColor.RED
         );
     }
 
-    public logForced(): void {
+    public logForced(logMessage?: string): void {
         this._moduleConfig.override.enable &&
             this._logger.logWithColor(
-                `${this._modName} Forced ${this._moduleName}: ${this._localDB.name}`,
+                `${this._modName} ${
+                    logMessage
+                        ? logMessage
+                        : `Forced ${this._moduleName}: ${this._localDB.name}`
+                }`,
                 LogTextColor.YELLOW
             );
     }

@@ -26,7 +26,11 @@
         },
         "calendar": {
             "enable": true,
-            "duration": 30
+            "duration": 30,
+            "override": {
+                "enable": false,
+                "name": "JUN"
+            }
         },
         "event": {
             "enable": true,

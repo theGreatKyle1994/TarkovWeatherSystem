@@ -31,7 +31,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
     private _staticRouterModService: StaticRouterModService;
     private _SeasonModule: SeasonModule;
     private _WeatherModule: WeatherModule;
-    private _CalendarModule = new CalendarModule();
+    private _CalendarModule: CalendarModule;
     private _EventModule = new EventModule();
     private _database: DatabaseService;
     private _weatherSeasonValues: IWeatherConfig;
@@ -60,12 +60,17 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                 this._weatherSeasonValues,
                 this._logger
             );
+            this._CalendarModule = new CalendarModule(
+                this._SeasonModule,
+                this._logger
+            );
             this._WeatherModule = new WeatherModule(
                 this._weatherSeasonValues,
                 this._logger
             );
 
             this._SeasonModule.enable();
+            this._CalendarModule.enable();
             this._WeatherModule.enable();
 
             // Set host UID for config value changing when fika is enabled
@@ -102,15 +107,13 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                             const isHost = this._FikaHandler.isHost(UID);
 
                             if (isHost) {
-                                // Check if season module is enabled
-                                modConfig.modules.season.enable &&
-                                    this._SeasonModule.updateDB();
-
-                                // Check if weather module is enabled
-                                modConfig.modules.weather.enable &&
-                                    this._WeatherModule.updateDB();
+                                if (!modConfig.modules.calendar.enable) {
+                                    modConfig.modules.season.enable &&
+                                        this._SeasonModule.updateDB();
+                                    modConfig.modules.weather.enable &&
+                                        this._WeatherModule.updateDB();
+                                } else this._CalendarModule.updateDB();
                             }
-
                             return output;
                         },
                     },
