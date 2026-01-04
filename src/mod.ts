@@ -23,15 +23,14 @@ import type { DatabaseService } from "@spt/services/DatabaseService";
 
 // Fika
 import type { IFikaRaidCreateRequestData } from "@spt/models/fika/routes/raid/create/IFikaRaidCreateRequestData";
-import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 
-class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
+class DynamicEnvironmentSystem implements IPreSptLoadMod {
     private _FikaHandler = new FikaHandler();
     private _logger: ILogger;
     private _configServer: ConfigServer;
     private _staticRouterModService: StaticRouterModService;
     private _SeasonModule: SeasonModule;
-    private _WeatherModule = new WeatherModule();
+    private _WeatherModule: WeatherModule;
     private _CalendarModule = new CalendarModule();
     private _EventModule = new EventModule();
     private _database: DatabaseService;
@@ -42,10 +41,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
         this._logger = container.resolve<ILogger>("WinstonLogger");
         this._staticRouterModService =
             container.resolve<StaticRouterModService>("StaticRouterModService");
-        // Get pre-database
         this._database = container.resolve<DatabaseService>("DatabaseService");
-
-        // Grab pre-database config values
         this._configServer = container.resolve<ConfigServer>("ConfigServer");
         this._weatherSeasonValues =
             this._configServer.getConfig<IWeatherConfig>(ConfigTypes.WEATHER);
@@ -53,20 +49,24 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
             ConfigTypes.SEASONAL_EVENT
         );
 
-        if (!modConfig.enable) {
+        if (!modConfig.enable)
             this._logger.logWithColor(
                 "[DES] Mod has been disabled. Check config.",
                 LogTextColor.YELLOW
             );
-        } else {
-            // Load pre-config setups
-            EventModule.preConfig(this._events, this._logger);
-
+        else {
             // Instatiate Modules
             this._SeasonModule = new SeasonModule(
                 this._weatherSeasonValues,
                 this._logger
             );
+            this._WeatherModule = new WeatherModule(
+                this._weatherSeasonValues,
+                this._logger
+            );
+
+            this._SeasonModule.enable();
+            this._WeatherModule.enable();
 
             // Set host UID for config value changing when fika is enabled
             this._staticRouterModService.registerStaticRouter(
@@ -101,39 +101,21 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                             const UID = info.results.profile._id;
                             const isHost = this._FikaHandler.isHost(UID);
 
-                            // Choose between using season or calendar functionality
-                            if (isHost && modConfig.modules.season.enable) {
-                                !modConfig.modules.calendar.enable
-                                    ? this._SeasonModule.updateDB()
-                                    : this._CalendarModule.incrementCalendar();
-                            }
+                            if (isHost) {
+                                // Check if season module is enabled
+                                modConfig.modules.season.enable &&
+                                    this._SeasonModule.updateDB();
 
-                            // Check if weather module is enabled
-                            modConfig.modules.weather.enable &&
-                                !modConfig.modules.weather.override.enable &&
-                                this._WeatherModule.decrementWeather();
+                                // Check if weather module is enabled
+                                modConfig.modules.weather.enable &&
+                                    this._WeatherModule.updateDB();
+                            }
 
                             return output;
                         },
                     },
                 ],
                 "[DES] /client/match/local/end"
-            );
-        }
-    }
-
-    public postDBLoad(container: DependencyContainer): void {
-        if (modConfig.enable) {
-            this._SeasonModule.enable();
-            this._CalendarModule.enable(this._SeasonModule, this._logger);
-            this._WeatherModule.enable(this._weatherSeasonValues, this._logger);
-            this._EventModule.enable(
-                this._events,
-                this._database.getLocations(),
-                this._CalendarModule,
-                this._SeasonModule,
-                this._WeatherModule,
-                this._logger
             );
         }
     }

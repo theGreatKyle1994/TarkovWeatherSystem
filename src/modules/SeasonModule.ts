@@ -25,39 +25,26 @@ export default class SeasonModule extends Module {
     }
 
     protected override configure(): void {
-        // Setup season dates to allow any season
         this._seasonValues.seasonDates = seasonDates;
         super.configure();
     }
 
-    public override updateDB(): void {
-        const seasonChoice = this._moduleConfig.useRandom
-            ? this.randomSeason()
-            : this.cycleSeason();
-
-        // Set chosen season to game database
-        this._seasonValues.overrideSeason =
-            Season[seasonChoice as keyof typeof SeasonName];
-
-        // Update db
-        super.updateDB();
-    }
-
     protected override cycleDB(): void {
-        if (this._moduleConfig.useRandom) super.cycleDB(this.randomSeason());
-        else super.cycleDB(this.cycleSeason());
+        super.cycleDB(
+            this._moduleConfig.useRandom
+                ? this.randomSeason()
+                : this.cycleSeason()
+        );
     }
 
     protected override enforceDB(): void {
         this._seasonValues.overrideSeason =
             Season[this._localDB.name as keyof typeof SeasonName];
-        // Enforce current db
         super.enforceDB();
     }
 
     public override forceDBChange(newSeason: keyof typeof SeasonName): void {
         this._seasonValues.overrideSeason = Season[newSeason];
-        // Bypass system to force db change
         super.forceDBChange(newSeason);
     }
 
@@ -70,7 +57,6 @@ export default class SeasonModule extends Module {
     }
 
     private cycleSeason(): keyof typeof SeasonName {
-        // Find next season in list
         return seasonOrder.indexOf(
             this._localDB.name as keyof typeof SeasonName
         ) ===

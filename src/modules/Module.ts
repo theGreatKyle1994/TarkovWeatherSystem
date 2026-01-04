@@ -45,6 +45,7 @@ export default abstract class Module {
         } else {
             isDecrementing ? this._localDB.value-- : this._localDB.value++;
             if (this.checkUpdate(isDecrementing)) this.cycleDB();
+            else writeDatabase(this._localDB, this._moduleName, this._logger);
             this.logRemaining();
         }
     }
@@ -59,6 +60,7 @@ export default abstract class Module {
         if (newValue) {
             this._localDB.name = newValue;
             this._localDB.value = this._moduleConfig.duration;
+            this._localDB.length = this._moduleConfig.duration;
             writeDatabase(this._localDB, this._moduleName, this._logger);
             this.logChange();
         }
@@ -77,7 +79,7 @@ export default abstract class Module {
         this.logCurrent();
     }
 
-    public log(
+    protected log(
         logMessage: string,
         color: LogTextColor = LogTextColor.GRAY
     ): void {
