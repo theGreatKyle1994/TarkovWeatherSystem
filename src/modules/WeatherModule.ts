@@ -41,10 +41,6 @@ export default class WeatherModule extends Module {
             "db/database"
         ).season;
 
-        this.log(
-            JSON.stringify(this._weatherValues.weather.timePeriod, null, 2)
-        );
-
         this._weatherWeights = loadWeights(this._logger, "weather/default");
         this._weatherConfigs = loadConfigs<WeatherCustomConfig>(
             this._logger,
@@ -71,6 +67,7 @@ export default class WeatherModule extends Module {
                 "weather/custom",
                 this._weatherWeights
             );
+
             this.log(
                 `Loaded ${Math.abs(
                     weatherCount - this._weatherConfigs.length
@@ -82,7 +79,6 @@ export default class WeatherModule extends Module {
         for (let { name } of this._weatherConfigs)
             this._weatherTypes.push(name);
 
-        this._weatherValues.weather.seasonValues = {};
         this._weatherValues.weather.generateWeatherAmountHours = 1;
         super.configure();
     }
@@ -113,11 +109,10 @@ export default class WeatherModule extends Module {
         super.forceDBChange(newWeather);
     }
 
-    private applyWeather(weather: string): void {
-        const weatherIn = this.findWeather(weather);
-        this._weatherValues.weather.seasonValues = {};
-        this._weatherValues.weather.seasonValues["default"] = weatherIn;
-        this._weatherValues.weather.seasonValues["WINTER"] = weatherIn;
+    private applyWeather(newWeather: string): void {
+        const weatherChoice = this.findWeather(newWeather);
+        for (let key in this._weatherValues.weather.seasonValues)
+            this._weatherValues.weather.seasonValues[key] = weatherChoice;
     }
 
     private findWeather(target: string): ISeasonalValues {
