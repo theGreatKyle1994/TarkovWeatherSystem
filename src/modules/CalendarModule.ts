@@ -14,7 +14,6 @@ import {
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
-import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 
 export default class CalendarModule extends Module {
     private _layouts: SeasonLayouts = seasonLayouts;
