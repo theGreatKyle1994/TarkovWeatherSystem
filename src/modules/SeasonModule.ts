@@ -1,9 +1,9 @@
 // Configs
-import localDB from "../../config/db/database.json";
 import seasonWeights from "../../config/season/weights.json";
 
 // General
-import Module from "./Module";
+import Module from "./core/Module";
+import type { DBEntry } from "../models/database";
 import { seasonDates, SeasonName, seasonOrder } from "../models/seasons";
 import { chooseWeight } from "../utilities/utils";
 
@@ -15,13 +15,16 @@ import { Season } from "@spt/models/enums/Season";
 export default class SeasonModule extends Module {
     private _seasonValues: IWeatherConfig;
 
-    constructor(seasonValues: IWeatherConfig, logger: ILogger) {
-        super("season", localDB.season, logger);
-        this._seasonValues = seasonValues;
+    constructor(seasonDB: DBEntry, logger: ILogger) {
+        super("season", seasonDB, logger);
     }
 
     get season(): keyof typeof SeasonName {
         return this._localDB.name as keyof typeof SeasonName;
+    }
+
+    public setConfig(config: IWeatherConfig): void {
+        this._seasonValues = config;
     }
 
     protected override configure(): void {

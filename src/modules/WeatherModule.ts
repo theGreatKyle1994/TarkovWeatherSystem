@@ -1,8 +1,5 @@
-// Configs
-import localDB from "../../config/db/database.json";
-
 // General
-import Module from "./Module";
+import Module from "./core/Module";
 import type { Database, DBEntry } from "../models/database";
 import type {
     WeatherWeightsConfig,
@@ -24,15 +21,18 @@ import type {
 } from "@spt/models/spt/config/IWeatherConfig";
 
 export default class WeatherModule extends Module {
-    private _dbSeason: DBEntry = localDB.season;
+    private _dbSeason: DBEntry;
     private _weatherValues: IWeatherConfig;
     private _weatherConfigs: WeatherCustomConfig[] = [];
     private _weatherTypes: string[] = [];
     private _weatherWeights: WeatherWeightsConfig;
 
-    constructor(weatherValues: IWeatherConfig, logger: ILogger) {
-        super("weather", localDB.weather, logger);
-        this._weatherValues = weatherValues;
+    constructor(weatherDB: DBEntry, logger: ILogger) {
+        super("weather", weatherDB, logger);
+    }
+
+    public setConfig(config: IWeatherConfig): void {
+        this._weatherValues = config;
     }
 
     protected override configure(): void {

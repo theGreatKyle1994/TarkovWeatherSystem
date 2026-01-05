@@ -1,10 +1,10 @@
 // Configs
-import modConfig from "../../config/config.json";
+import modConfig from "../../../config/config.json";
 
 // General
-import type { ModConfig, ModEntry } from "../models/mod";
-import type { DBEntry, Database } from "../models/database";
-import { writeDatabase } from "../utilities/utils";
+import type { ModConfig, ModEntry } from "../../models/mod";
+import type { DBEntry, Database } from "../../models/database";
+import { writeDatabase } from "../../utilities/utils";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
@@ -25,6 +25,8 @@ export default abstract class Module {
         this._localDB = localDB;
         this._logger = logger;
     }
+
+    public abstract setConfig(config: any): void;
 
     public enable(): void {
         this._moduleConfig.enable ? this.configure() : this.logDisabled();

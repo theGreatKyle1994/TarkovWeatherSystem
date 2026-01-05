@@ -2,78 +2,39 @@
 import modConfig from "../config/config.json";
 
 // General
-import type { DependencyContainer } from "tsyringe";
-import WeatherModule from "./modules/WeatherModule";
-import SeasonModule from "./modules/SeasonModule";
-import CalendarModule from "./modules/CalendarModule";
-import EventModule from "./modules/EventModule";
+import ModuleManager from "./modules/core/ModuleManager";
 import FikaHandler from "./utilities/fikaHandler";
 
 // SPT
-import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
+import type { DependencyContainer } from "tsyringe";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { StaticRouterModService } from "@spt/services/mod/staticRouter/StaticRouterModService";
 import type { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
-import type { ConfigServer } from "@spt/servers/ConfigServer";
-import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 import type { IEndLocalRaidRequestData } from "@spt/models/eft/match/IEndLocalRaidRequestData";
-import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEventConfig";
-import type { DatabaseService } from "@spt/services/DatabaseService";
 
 // Fika
 import type { IFikaRaidCreateRequestData } from "@spt/models/fika/routes/raid/create/IFikaRaidCreateRequestData";
+import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 
-class DynamicEnvironmentSystem implements IPreSptLoadMod {
-    private _FikaHandler = new FikaHandler();
+class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     private _logger: ILogger;
-    private _configServer: ConfigServer;
     private _staticRouterModService: StaticRouterModService;
-    private _SeasonModule: SeasonModule;
-    private _WeatherModule: WeatherModule;
-    private _CalendarModule: CalendarModule;
-    private _EventModule = new EventModule();
-    private _database: DatabaseService;
-    private _weatherSeasonValues: IWeatherConfig;
-    private _events: ISeasonalEventConfig;
+    private _ModuleManager: ModuleManager;
+    private _FikaHandler = new FikaHandler();
 
     public preSptLoad(container: DependencyContainer): void {
         this._logger = container.resolve<ILogger>("WinstonLogger");
-        this._staticRouterModService =
-            container.resolve<StaticRouterModService>("StaticRouterModService");
-        this._database = container.resolve<DatabaseService>("DatabaseService");
-        this._configServer = container.resolve<ConfigServer>("ConfigServer");
-        this._weatherSeasonValues =
-            this._configServer.getConfig<IWeatherConfig>(ConfigTypes.WEATHER);
-        this._events = this._configServer.getConfig<ISeasonalEventConfig>(
-            ConfigTypes.SEASONAL_EVENT
-        );
 
-        if (!modConfig.enable)
-            this._logger.logWithColor(
-                "[DES] Mod has been disabled. Check config.",
-                LogTextColor.YELLOW
-            );
-        else {
-            // Instantiate Modules
-            this._SeasonModule = new SeasonModule(
-                this._weatherSeasonValues,
-                this._logger
-            );
-            this._CalendarModule = new CalendarModule(
-                this._SeasonModule,
-                this._logger
-            );
-            this._WeatherModule = new WeatherModule(
-                this._weatherSeasonValues,
-                this._logger
-            );
+        if (modConfig.enable) {
+            this._ModuleManager = new ModuleManager(container, this._logger);
+            this._ModuleManager.preSPTConfig();
 
-            this._SeasonModule.enable();
-            this._CalendarModule.enable();
-            this._WeatherModule.enable();
+            this._staticRouterModService =
+                container.resolve<StaticRouterModService>(
+                    "StaticRouterModService"
+                );
 
-            // Set host UID for config value changing when fika is enabled
             this._staticRouterModService.registerStaticRouter(
                 "[DES] /fika/raid/create",
                 [
@@ -89,8 +50,6 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                 ],
                 "[DES] /fika/raid/create"
             );
-
-            // Decrement weather and season config values after raid
             this._staticRouterModService.registerStaticRouter(
                 "[DES] /client/match/local/end",
                 [
@@ -102,17 +61,9 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                             ___,
                             output
                         ) => {
-                            // Only host can update database to prevent duplication
                             const UID = info.results.profile._id;
                             const isHost = this._FikaHandler.isHost(UID);
-
                             if (isHost) {
-                                if (!modConfig.modules.calendar.enable) {
-                                    modConfig.modules.season.enable &&
-                                        this._SeasonModule.updateDB();
-                                    modConfig.modules.weather.enable &&
-                                        this._WeatherModule.updateDB();
-                                } else this._CalendarModule.updateDB();
                             }
                             return output;
                         },
@@ -120,7 +71,16 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod {
                 ],
                 "[DES] /client/match/local/end"
             );
-        }
+        } else
+            this._logger.logWithColor(
+                "[DES] Mod has been disabled. Check config.",
+                LogTextColor.YELLOW
+            );
+    }
+
+    public postDBLoad(): void {
+        this._ModuleManager.postDBConfig();
+        modConfig.enable && this._ModuleManager.enable();
     }
 }
 

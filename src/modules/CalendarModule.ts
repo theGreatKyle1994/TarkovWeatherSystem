@@ -3,7 +3,7 @@ import localDB from "../../config/db/database.json";
 import seasonLayouts from "../../config/calendar/seasonLayouts.json";
 
 // General
-import Module from "./Module";
+import Module from "./core/Module";
 import SeasonModule from "./SeasonModule";
 import {
     CalendarName,
