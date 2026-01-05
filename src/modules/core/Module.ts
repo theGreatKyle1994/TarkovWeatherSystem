@@ -1,7 +1,9 @@
 // Configs
 import modConfig from "../../../config/config.json";
+import db from "../../../config/db/database.json";
 
 // General
+import { loadConfig } from "../../utilities/utils";
 import type { ModConfig, ModEntry } from "../../models/mod";
 import type { DBEntry, Database } from "../../models/database";
 import { writeDatabase } from "../../utilities/utils";
@@ -18,40 +20,49 @@ export default abstract class Module {
     protected readonly _modConfig: ModConfig = modConfig;
     protected readonly _moduleConfig: ModEntry;
     protected _localDB: DBEntry;
+    protected _db: Database = db;
 
-    constructor(moduleName: keyof Database, localDB: DBEntry, logger: ILogger) {
+    constructor(moduleName: keyof Database, logger: ILogger) {
         this._moduleName = moduleName;
         this._moduleConfig = this._modConfig.modules[this._moduleName];
-        this._localDB = localDB;
+        this._localDB = this._db[moduleName];
         this._logger = logger;
     }
 
-    public abstract setConfig(config: any): void;
+    public setConfig(config: any): void {}
 
     public enable(): void {
         this._moduleConfig.enable ? this.configure() : this.logDisabled();
     }
 
     protected configure(): void {
-        if (this._moduleConfig.override.enable) {
-            this.forceDBChange();
-            return;
-        } else if (this.checkUpdate()) this.cycleDB();
-        else this.enforceDB();
-        this.logRemaining();
+        if (this._moduleConfig.override.enable)
+            this.setDB(this._moduleConfig.override.name, true);
+        else if (this.checkUpdate()) this.cycleDB();
+        else {
+            this.enforceDB();
+            this.logRemaining();
+        }
     }
 
     public updateDB(): void {
-        if (this._moduleConfig.override.enable) {
-            this.enforceDB();
-            return;
-        } else {
-            this._isDecrementing
-                ? this._localDB.value--
-                : this._localDB.value++;
-            if (this.checkUpdate()) this.cycleDB();
-            else writeDatabase(this._localDB, this._moduleName, this._logger);
-            this.logRemaining();
+        if (this._moduleConfig.enable) {
+            if (this._moduleConfig.override.enable) this.enforceDB();
+            else {
+                this._isDecrementing
+                    ? this._localDB.value--
+                    : this._localDB.value++;
+                if (this.checkUpdate()) this.cycleDB();
+                else {
+                    writeDatabase(
+                        this._localDB,
+                        this._moduleName,
+                        this._logger
+                    );
+                    this.logRemaining();
+                }
+            }
+            this._db = loadConfig(this._logger, "db/database");
         }
     }
 
@@ -61,40 +72,50 @@ export default abstract class Module {
             : this._localDB.value > this._localDB.length;
     }
 
-    protected cycleDB(newValue?: string): void {
-        if (newValue) {
-            this._localDB.name = newValue;
-            this._localDB.value = this._isDecrementing
-                ? this._moduleConfig.duration
-                : 1;
-            this._localDB.length = this._moduleConfig.duration;
-            writeDatabase(this._localDB, this._moduleName, this._logger);
-            this.logChange();
+    public cycleDB(newValue: string = this._localDB.name): void {
+        if (this._moduleConfig.enable) {
+            if (!this._moduleConfig.override.enable) {
+                this._localDB.name = newValue;
+                this._localDB.value = this._isDecrementing
+                    ? this._moduleConfig.duration
+                    : 1;
+                this._localDB.length = this._moduleConfig.duration;
+                writeDatabase(this._localDB, this._moduleName, this._logger);
+                this.logChange();
+                this.logRemaining();
+            }
         }
     }
 
-    public forceDBChange(
-        newValue: string = this._moduleConfig.override.name
+    public setDB(
+        newValue: string = this._localDB.name,
+        isForced: boolean = false
     ): void {
-        if (newValue) {
+        if (this._moduleConfig.enable) {
             this._localDB.name = newValue;
-            this.logForced();
+            if (isForced) this.logForced();
+            else {
+                writeDatabase(this._localDB, this._moduleName, this._logger);
+                this.logChange();
+            }
         }
     }
 
     protected enforceDB(): void {
-        this.logCurrent();
+        this._moduleConfig.enable && this.logCurrent();
     }
 
     protected log(
         logMessage: string,
         color: LogTextColor = LogTextColor.GRAY
     ): void {
-        this._logger.logWithColor(`${this._modName} ${logMessage}`, color);
+        this._moduleConfig.enable &&
+            this._logger.logWithColor(`${this._modName} ${logMessage}`, color);
     }
 
     public logCurrent(logMessage?: string): void {
-        this._modConfig.log.current &&
+        this._moduleConfig.enable &&
+            this._modConfig.log.current &&
             this._logger.logWithColor(
                 `${this._modName} ${
                     logMessage
@@ -106,7 +127,8 @@ export default abstract class Module {
     }
 
     public logChange(logMessage?: string): void {
-        this._modConfig.log.change &&
+        this._moduleConfig.enable &&
+            this._modConfig.log.change &&
             this._logger.logWithColor(
                 `${this._modName} ${
                     logMessage
@@ -118,7 +140,8 @@ export default abstract class Module {
     }
 
     public logRemaining(logMessage?: string): void {
-        this._modConfig.log.remaining &&
+        this._moduleConfig.enable &&
+            this._modConfig.log.remaining &&
             this._logger.logWithColor(
                 `${this._modName} ${
                     logMessage
@@ -136,18 +159,20 @@ export default abstract class Module {
     }
 
     public logDisabled(logMessage?: string): void {
-        this._logger.logWithColor(
-            `${this._modName} ${
-                logMessage
-                    ? logMessage
-                    : `Module: ${this._moduleName} is disabled.`
-            }`,
-            LogTextColor.RED
-        );
+        this._moduleConfig.enable &&
+            this._logger.logWithColor(
+                `${this._modName} ${
+                    logMessage
+                        ? logMessage
+                        : `Module: ${this._moduleName} is disabled.`
+                }`,
+                LogTextColor.RED
+            );
     }
 
     public logForced(logMessage?: string): void {
-        this._moduleConfig.override.enable &&
+        this._moduleConfig.enable &&
+            this._moduleConfig.override.enable &&
             this._logger.logWithColor(
                 `${this._modName} ${
                     logMessage

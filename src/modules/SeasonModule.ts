@@ -3,8 +3,8 @@ import seasonWeights from "../../config/season/weights.json";
 
 // General
 import Module from "./core/Module";
-import type { DBEntry } from "../models/database";
-import { seasonDates, SeasonName, seasonOrder } from "../models/seasons";
+import { seasonDates, seasonOrder } from "../models/seasons";
+import type { SeasonName, SeasonWeights } from "../models/seasons";
 import { chooseWeight } from "../utilities/utils";
 
 // SPT
@@ -14,25 +14,22 @@ import { Season } from "@spt/models/enums/Season";
 
 export default class SeasonModule extends Module {
     private _seasonValues: IWeatherConfig;
+    private readonly _seasonWeights: SeasonWeights = seasonWeights;
 
-    constructor(seasonDB: DBEntry, logger: ILogger) {
-        super("season", seasonDB, logger);
+    constructor(logger: ILogger) {
+        super("season", logger);
     }
 
     get season(): keyof typeof SeasonName {
         return this._localDB.name as keyof typeof SeasonName;
     }
 
-    public setConfig(config: IWeatherConfig): void {
+    public override setConfig(config: IWeatherConfig): void {
         this._seasonValues = config;
-    }
-
-    protected override configure(): void {
         this._seasonValues.seasonDates = seasonDates;
-        super.configure();
     }
 
-    protected override cycleDB(): void {
+    public override cycleDB(): void {
         super.cycleDB(
             this._moduleConfig.useRandom
                 ? this.randomSeason()
@@ -46,14 +43,17 @@ export default class SeasonModule extends Module {
         super.enforceDB();
     }
 
-    public override forceDBChange(newSeason: keyof typeof SeasonName): void {
+    public override setDB(
+        newSeason: keyof typeof SeasonName,
+        isForced: boolean = false
+    ): void {
         this._seasonValues.overrideSeason = Season[newSeason];
-        super.forceDBChange(newSeason);
+        super.setDB(newSeason, isForced);
     }
 
     private randomSeason(): keyof typeof SeasonName {
         const seasonChoice = chooseWeight(
-            seasonWeights
+            this._seasonWeights
         ) as keyof typeof SeasonName;
         this._seasonValues.overrideSeason = Season[seasonChoice];
         return seasonChoice;

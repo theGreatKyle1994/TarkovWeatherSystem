@@ -176,3 +176,12 @@ export function chooseWeight(weights: Object): string {
         if (total >= cursor) return key;
     }
 }
+
+export function calcPercentageOfWeights(
+    weights: Object,
+    chosenWeight: string
+): string {
+    let total = 0;
+    for (let key in weights) total += weights[key];
+    return ((weights[chosenWeight] / total) * 100).toFixed(2);
+}

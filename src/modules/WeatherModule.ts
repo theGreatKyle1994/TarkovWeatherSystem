@@ -27,15 +27,13 @@ export default class WeatherModule extends Module {
     private _weatherTypes: string[] = [];
     private _weatherWeights: WeatherWeightsConfig;
 
-    constructor(weatherDB: DBEntry, logger: ILogger) {
-        super("weather", weatherDB, logger);
+    constructor(logger: ILogger) {
+        super("weather", logger);
     }
 
-    public setConfig(config: IWeatherConfig): void {
+    public override setConfig(config: IWeatherConfig): void {
         this._weatherValues = config;
-    }
 
-    protected override configure(): void {
         this._dbSeason = loadConfig<Database>(
             this._logger,
             "db/database"
@@ -80,18 +78,9 @@ export default class WeatherModule extends Module {
             this._weatherTypes.push(name);
 
         this._weatherValues.weather.generateWeatherAmountHours = 1;
-        super.configure();
     }
 
-    public override updateDB(): void {
-        this._dbSeason = loadConfig<Database>(
-            this._logger,
-            "db/database"
-        ).season;
-        super.updateDB();
-    }
-
-    protected override cycleDB(): void {
+    public override cycleDB(): void {
         const weatherChoice = chooseWeight(
             this._weatherWeights[this._dbSeason.name]
         );
@@ -104,9 +93,9 @@ export default class WeatherModule extends Module {
         super.enforceDB();
     }
 
-    public override forceDBChange(newWeather: string): void {
+    public setDB(newWeather: string, isForced?: boolean): void {
         this.applyWeather(newWeather);
-        super.forceDBChange(newWeather);
+        super.setDB(newWeather, isForced);
     }
 
     private applyWeather(newWeather: string): void {

@@ -60,13 +60,12 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
                             info: IEndLocalRaidRequestData,
                             ___,
                             output
-                        ) => {
-                            const UID = info.results.profile._id;
-                            const isHost = this._FikaHandler.isHost(UID);
-                            if (isHost) {
-                            }
-                            return output;
-                        },
+                        ) => (
+                            this._FikaHandler.isHost(
+                                info.results.profile._id
+                            ) && this._ModuleManager.update(),
+                            output
+                        ),
                     },
                 ],
                 "[DES] /client/match/local/end"
@@ -79,8 +78,10 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     }
 
     public postDBLoad(): void {
-        this._ModuleManager.postDBConfig();
-        modConfig.enable && this._ModuleManager.enable();
+        if (modConfig.enable) {
+            this._ModuleManager.postDBConfig();
+            this._ModuleManager.enable();
+        }
     }
 }
 
