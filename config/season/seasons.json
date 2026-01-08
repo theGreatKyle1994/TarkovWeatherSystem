@@ -1,0 +1,128 @@
+{
+    "summer": {
+        "name": "Summer",
+        "value": 0,
+        "weight": 1,
+        "weather": {
+            "stormy": 10,
+            "foggy": 10,
+            "windy": 10,
+            "misty": 10,
+            "sunny": 60,
+            "heavyStorm": 10
+        },
+        "month": {
+            "start": 6,
+            "end": 8
+        },
+        "day": {
+            "start": 1,
+            "end": 30
+        }
+    },
+    "autumn": {
+        "name": "Autumn",
+        "value": 1,
+        "weight": 1,
+        "weather": {
+            "stormy": 15,
+            "foggy": 30,
+            "windy": 30,
+            "misty": 20,
+            "sunny": 5,
+            "heavyStorm": 20
+        },
+        "month": {
+            "start": 9,
+            "end": 9
+        },
+        "day": {
+            "start": 1,
+            "end": 30
+        }
+    },
+    "autumnLate": {
+        "name": "Late Autumn",
+        "value": 4,
+        "weight": 1,
+        "weather": {
+            "stormy": 20,
+            "foggy": 20,
+            "windy": 30,
+            "misty": 10,
+            "sunny": 20,
+            "heavyStorm": 10
+        },
+        "month": {
+            "start": 10,
+            "end": 11
+        },
+        "day": {
+            "start": 1,
+            "end": 30
+        }
+    },
+    "winter": {
+        "name": "Winter",
+        "value": 2,
+        "weight": 1,
+        "weather": {
+            "stormy": 30,
+            "foggy": 10,
+            "windy": 30,
+            "misty": 10,
+            "sunny": 20,
+            "heavyStorm": 20
+        },
+        "month": {
+            "start": 12,
+            "end": 2
+        },
+        "day": {
+            "start": 1,
+            "end": 30
+        }
+    },
+    "springEarly": {
+        "name": "Early Spring",
+        "value": 5,
+        "weight": 1,
+        "weather": {
+            "stormy": 40,
+            "foggy": 10,
+            "windy": 20,
+            "misty": 10,
+            "sunny": 20,
+            "heavyStorm": 30
+        },
+        "month": {
+            "start": 3,
+            "end": 3
+        },
+        "day": {
+            "start": 1,
+            "end": 30
+        }
+    },
+    "spring": {
+        "name": "Spring",
+        "value": 3,
+        "weight": 1,
+        "weather": {
+            "stormy": 50,
+            "foggy": 10,
+            "windy": 20,
+            "misty": 10,
+            "sunny": 10,
+            "heavyStorm": 40
+        },
+        "month": {
+            "start": 4,
+            "end": 5
+        },
+        "day": {
+            "start": 1,
+            "end": 30
+        }
+    }
+}

@@ -1,32 +1,21 @@
+// General
+import type { TimeStampEntry } from "./mod";
+
 // SPT
 import type { ISeasonDateTimes } from "@spt/models/spt/config/IWeatherConfig";
 
-export interface SeasonWeights {
-    SUMMER: number;
-    AUTUMN: number;
-    WINTER: number;
-    SPRING: number;
-    AUTUMN_LATE: number;
-    SPRING_EARLY: number;
+export interface SeasonConfigEntry {
+    name: string;
+    value: number;
+    weight: number;
+    weather: Record<string, number>;
+    month: TimeStampEntry;
+    day: TimeStampEntry;
 }
 
-export enum SeasonName {
-    SUMMER = "SUMMER",
-    AUTUMN = "AUTUMN",
-    WINTER = "WINTER",
-    SPRING = "SPRING",
-    AUTUMN_LATE = "AUTUMN_LATE",
-    SPRING_EARLY = "SPRING_EARLY",
+export interface SeasonConfig {
+    [key: string]: SeasonConfigEntry;
 }
-
-export const seasonOrder: (keyof typeof SeasonName)[] = [
-    "SUMMER",
-    "AUTUMN",
-    "AUTUMN_LATE",
-    "WINTER",
-    "SPRING_EARLY",
-    "SPRING",
-];
 
 export const seasonDates: ISeasonDateTimes[] = [
     {

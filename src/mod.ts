@@ -78,10 +78,7 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     }
 
     public postDBLoad(): void {
-        if (modConfig.enable) {
-            this._ModuleManager.postDBConfig();
-            this._ModuleManager.enable();
-        }
+        modConfig.enable && this._ModuleManager.postDBConfig();
     }
 }
 

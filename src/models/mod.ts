@@ -1,32 +1,8 @@
 export interface TimeStampEntry {
     start: number;
-    end: number;
-}
-
-export interface OverrideEntry {
-    enable: boolean;
-    name: string;
-}
-
-export interface ModEntry {
-    enable: boolean;
-    useRandom?: boolean;
-    useCustom?: boolean;
-    duration?: number;
-    override?: OverrideEntry;
+    send: number;
 }
 
 export interface ModConfig {
     enable: boolean;
-    log: {
-        current: boolean;
-        change: boolean;
-        remaining: boolean;
-    };
-    modules: {
-        season: ModEntry;
-        weather: ModEntry;
-        calendar: ModEntry;
-        event: ModEntry;
-    };
 }

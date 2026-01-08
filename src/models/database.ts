@@ -1,12 +1,23 @@
-export interface DBEntry {
-    name: string;
-    length?: number;
-    value?: number;
-}
-
 export interface Database {
-    season: DBEntry;
-    weather: DBEntry;
-    calendar: DBEntry;
-    event: DBEntry;
+    date: {
+        name: string;
+        nameForm: string;
+        month: number;
+        day: number;
+        year: number;
+    };
+    event: {
+        name: string;
+        nameForm: string;
+        season: string;
+        weather: string;
+    };
+    season: {
+        name: string;
+        nameForm: string;
+    };
+    weather: {
+        name: string;
+        nameForm: string;
+    };
 }

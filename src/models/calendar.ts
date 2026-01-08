@@ -1,19 +1,16 @@
-// General
-import type { TimeStampEntry } from "./mod";
-
 export enum CalendarName {
-    JAN = "JAN",
-    FEB = "FEB",
-    MAR = "MAR",
-    APR = "APR",
-    MAY = "MAY",
-    JUN = "JUN",
-    JUL = "JUL",
-    AUG = "AUG",
-    SEP = "SEP",
-    OCT = "OCT",
-    NOV = "NOV",
-    DEC = "DEC",
+    JAN = "January",
+    FEB = "February",
+    MAR = "March",
+    APR = "April",
+    MAY = "May",
+    JUN = "June",
+    JUL = "July",
+    AUG = "August",
+    SEP = "September",
+    OCT = "October",
+    NOV = "November",
+    DEC = "December",
 }
 
 export const calendarOrder: string[] = [
@@ -30,17 +27,3 @@ export const calendarOrder: string[] = [
     "NOV",
     "DEC",
 ];
-
-export interface SeasonLayoutEntry {
-    month: TimeStampEntry;
-    day: TimeStampEntry;
-}
-
-export interface SeasonLayouts {
-    SUMMER: SeasonLayoutEntry;
-    AUTUMN: SeasonLayoutEntry;
-    WINTER: SeasonLayoutEntry;
-    SPRING: SeasonLayoutEntry;
-    AUTUMN_LATE: SeasonLayoutEntry;
-    SPRING_EARLY: SeasonLayoutEntry;
-}

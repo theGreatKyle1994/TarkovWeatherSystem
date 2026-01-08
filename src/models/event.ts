@@ -1,5 +1,4 @@
 // General
-import type { SeasonName } from "./seasons";
 import type { TimeStampEntry } from "./mod";
 
 // SPT
