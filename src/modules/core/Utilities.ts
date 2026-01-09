@@ -2,6 +2,7 @@
 import path from "path";
 import fs from "fs";
 import type { Database } from "../../models/database";
+import type { TimeFrameEntry, TimeStampEntry } from "../../models/calendar";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
@@ -127,5 +128,23 @@ export default class Utilities {
         let total = 0;
         for (let key in weights) total += weights[key];
         return ((weights[chosenWeight] / total) * 100).toFixed(2);
+    }
+
+    static checkWithinDateRange(
+        day: number,
+        month: number,
+        timeFrame: TimeFrameEntry
+    ): boolean {
+        function checkRange(input: number, timeRange: TimeStampEntry): boolean {
+            const monthOffset = timeRange.start + timeRange.end - input;
+            return timeRange.start > timeRange.end
+                ? monthOffset >= timeRange.start || monthOffset <= timeRange.end
+                : monthOffset >= timeRange.start &&
+                      monthOffset <= timeRange.end;
+        }
+
+        return (
+            checkRange(month, timeFrame.month) && checkRange(day, timeFrame.day)
+        );
     }
 }

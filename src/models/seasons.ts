@@ -1,5 +1,5 @@
 // General
-import type { TimeStampEntry } from "./mod";
+import type { TimeFrameEntry } from "./calendar";
 
 // SPT
 import type { ISeasonDateTimes } from "@spt/models/spt/config/IWeatherConfig";
@@ -9,8 +9,7 @@ export interface SeasonConfigEntry {
     value: number;
     weight: number;
     weather: Record<string, number>;
-    month: TimeStampEntry;
-    day: TimeStampEntry;
+    timeFrame: TimeFrameEntry;
 }
 
 export interface SeasonConfig {

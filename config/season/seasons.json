@@ -11,13 +11,15 @@
             "sunny": 60,
             "heavyStorm": 10
         },
-        "month": {
-            "start": 6,
-            "end": 8
-        },
-        "day": {
-            "start": 1,
-            "end": 30
+        "timeFrame": {
+            "month": {
+                "start": 6,
+                "end": 8
+            },
+            "day": {
+                "start": 1,
+                "end": 30
+            }
         }
     },
     "autumn": {
@@ -32,13 +34,15 @@
             "sunny": 5,
             "heavyStorm": 20
         },
-        "month": {
-            "start": 9,
-            "end": 9
-        },
-        "day": {
-            "start": 1,
-            "end": 30
+        "timeFrame": {
+            "month": {
+                "start": 9,
+                "end": 9
+            },
+            "day": {
+                "start": 1,
+                "end": 30
+            }
         }
     },
     "autumnLate": {
@@ -53,13 +57,15 @@
             "sunny": 20,
             "heavyStorm": 10
         },
-        "month": {
-            "start": 10,
-            "end": 11
-        },
-        "day": {
-            "start": 1,
-            "end": 30
+        "timeFrame": {
+            "month": {
+                "start": 10,
+                "end": 11
+            },
+            "day": {
+                "start": 1,
+                "end": 30
+            }
         }
     },
     "winter": {
@@ -74,13 +80,15 @@
             "sunny": 20,
             "heavyStorm": 20
         },
-        "month": {
-            "start": 12,
-            "end": 2
-        },
-        "day": {
-            "start": 1,
-            "end": 30
+        "timeFrame": {
+            "month": {
+                "start": 12,
+                "end": 2
+            },
+            "day": {
+                "start": 1,
+                "end": 30
+            }
         }
     },
     "springEarly": {
@@ -95,13 +103,15 @@
             "sunny": 20,
             "heavyStorm": 30
         },
-        "month": {
-            "start": 3,
-            "end": 3
-        },
-        "day": {
-            "start": 1,
-            "end": 30
+        "timeFrame": {
+            "month": {
+                "start": 3,
+                "end": 3
+            },
+            "day": {
+                "start": 1,
+                "end": 30
+            }
         }
     },
     "spring": {
@@ -116,13 +126,15 @@
             "sunny": 10,
             "heavyStorm": 40
         },
-        "month": {
-            "start": 4,
-            "end": 5
-        },
-        "day": {
-            "start": 1,
-            "end": 30
+        "timeFrame": {
+            "month": {
+                "start": 4,
+                "end": 5
+            },
+            "day": {
+                "start": 1,
+                "end": 30
+            }
         }
     }
 }

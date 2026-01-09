@@ -54,18 +54,4 @@ export default class CalendarModule extends Module {
             ? calendarOrder[calendarOrder.length - 1]
             : calendarOrder[this._db.date.month - 1];
     }
-
-    private isFinalMonth(timeStamp: TimeStampEntry): boolean {
-        return this._db.date.month === timeStamp.end;
-    }
-
-    static checkWithinDateRange(
-        input: number,
-        timeStamp: TimeStampEntry
-    ): boolean {
-        const offset = timeStamp.start + timeStamp.end - input;
-        return timeStamp.start > timeStamp.end
-            ? offset >= timeStamp.start || offset <= timeStamp.end
-            : offset >= timeStamp.start && offset <= timeStamp.end;
-    }
 }

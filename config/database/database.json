@@ -1,8 +1,6 @@
 {
     "date": {
         "name": {
-            "month": "June",
-            "day": "1st",
             "numeric": "6/1/2010",
             "alpha": "June 1st, 2010"
         },
@@ -11,17 +9,16 @@
         "year": 2010
     },
     "event": {
-        "name": "none",
-        "nameForm": "None",
+        "name": "None",
         "season": "",
         "weather": ""
     },
     "season": {
-        "name": "summer",
-        "nameForm": "Summer"
+        "name": "Summer",
+        "value": "summer"
     },
     "weather": {
-        "name": "sunny",
-        "nameForm": "Sunny"
+        "name": "Sunny",
+        "value": "sunny"
     }
 }

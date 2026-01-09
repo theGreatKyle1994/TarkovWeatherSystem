@@ -1,49 +1,67 @@
 // Configs
-import seasonWeights from "../../config/season/weights.json";
+import seasonConfig from "../../config/season/seasons.json";
 
 // General
 import Module from "./core/Module";
-import { seasonDates, seasonOrder } from "../models/seasons";
-import type { SeasonName, SeasonWeights } from "../models/seasons";
-import { chooseWeight } from "./core/Utilities";
+import { seasonDates } from "../models/seasons";
+import type { SeasonConfig, SeasonConfigEntry } from "../models/seasons";
 import type { Database } from "../models/database";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
-import { Season } from "@spt/models/enums/Season";
 
 export default class SeasonModule extends Module {
     private _seasonValues: IWeatherConfig;
-    private readonly _seasonWeights: SeasonWeights = seasonWeights;
+    private readonly _seasonConfig: SeasonConfig = seasonConfig;
 
     constructor(db: Database, logger: ILogger) {
         super(db, logger);
     }
 
-    // public enable(config: IWeatherConfig): void {
-    //     this._seasonValues = config;
-    //     this._seasonValues.seasonDates = seasonDates;
-    //     this._seasonValues.overrideSeason =
-    //         Season[this._localDB.name as keyof typeof SeasonName];
-    // }
+    private get season(): number {
+        return this._seasonConfig[this._db.season.value].value;
+    }
 
-    // private randomSeason(): keyof typeof SeasonName {
-    //     const seasonChoice = chooseWeight(
-    //         this._seasonWeights
-    //     ) as keyof typeof SeasonName;
-    //     this._seasonValues.overrideSeason = Season[seasonChoice];
-    //     return seasonChoice;
-    // }
+    private get seasonEntry(): SeasonConfigEntry {
+        return this._seasonConfig[this._db.season.value];
+    }
 
-    // private cycleSeason(): keyof typeof SeasonName {
-    //     return seasonOrder.indexOf(this._db.name as keyof typeof SeasonName) ===
-    //         seasonOrder.length - 1
-    //         ? seasonOrder[0]
-    //         : seasonOrder[
-    //               seasonOrder.indexOf(
-    //                   this._db.name as keyof typeof SeasonName
-    //               ) + 1
-    //           ];
-    // }
+    public initialize(config: IWeatherConfig): void {
+        this._seasonValues = config;
+        this._seasonValues.seasonDates = seasonDates;
+    }
+
+    public enable(): void {
+        this._seasonValues.overrideSeason = this.season;
+        // TEMP
+        this.update();
+    }
+
+    public update(): void {
+        if (
+            !this.Utilities.checkWithinDateRange(
+                this._db.date.day,
+                this._db.date.month,
+                this.seasonEntry.timeFrame
+            )
+        ) {
+            for (let key in this._seasonConfig) {
+                if (
+                    this.Utilities.checkWithinDateRange(
+                        this._db.date.day,
+                        this._db.date.month,
+                        this._seasonConfig[key].timeFrame
+                    )
+                ) {
+                    this._db.season.name = this._seasonConfig[key].name;
+                    this._db.season.value = key;
+                    this._seasonValues.overrideSeason = this.season;
+                    this._logger.success(
+                        JSON.stringify(this._db.season, null, 4)
+                    );
+                }
+            }
+        }
+    }
 }

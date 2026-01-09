@@ -10,16 +10,15 @@ export interface Database {
     };
     event: {
         name: string;
-        nameForm: string;
         season: string;
         weather: string;
     };
     season: {
         name: string;
-        nameForm: string;
+        value: string;
     };
     weather: {
         name: string;
-        nameForm: string;
+        value: string;
     };
 }
