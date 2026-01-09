@@ -37,6 +37,8 @@ export default class SeasonModule extends Module {
     public enable(): void {
         if (!this._seasonNames.includes(this._db.season.value))
             this._db.season.value = "summer";
+        if (this._db.season.name !== this.seasonEntry.name)
+            this._db.season.name = this.seasonEntry.name;
         this._seasonValues.overrideSeason = this.season;
         this.update();
     }
