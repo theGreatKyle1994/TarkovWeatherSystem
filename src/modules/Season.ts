@@ -14,6 +14,7 @@ import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 export default class SeasonModule extends Module {
     private _seasonValues: IWeatherConfig;
     private readonly _seasonConfig: SeasonConfig = seasonConfig;
+    private readonly _seasonNames: string[] = [];
 
     constructor(db: Database, logger: ILogger) {
         super(db, logger);
@@ -30,38 +31,48 @@ export default class SeasonModule extends Module {
     public initialize(config: IWeatherConfig): void {
         this._seasonValues = config;
         this._seasonValues.seasonDates = seasonDates;
+        for (let season in this._seasonConfig) this._seasonNames.push(season);
+        if (!this._seasonNames.includes(this._db.season.value))
+            this._db.season.value = "summer";
     }
 
     public enable(): void {
         this._seasonValues.overrideSeason = this.season;
-        // TEMP
         this.update();
     }
 
     public update(): void {
-        if (
-            !this.Utilities.checkWithinDateRange(
-                this._db.date.day,
-                this._db.date.month,
-                this.seasonEntry.timeFrame
-            )
-        ) {
-            for (let key in this._seasonConfig) {
-                if (
-                    this.Utilities.checkWithinDateRange(
-                        this._db.date.day,
-                        this._db.date.month,
-                        this._seasonConfig[key].timeFrame
-                    )
-                ) {
-                    this._db.season.name = this._seasonConfig[key].name;
-                    this._db.season.value = key;
-                    this._seasonValues.overrideSeason = this.season;
-                    this._logger.success(
-                        JSON.stringify(this._db.season, null, 4)
-                    );
+        if (!this._db.event.season) {
+            if (
+                !this.Utilities.checkWithinDateRange(
+                    this._db.date.day,
+                    this._db.date.month,
+                    this.seasonEntry.timeFrame
+                )
+            ) {
+                for (let key in this._seasonConfig) {
+                    if (
+                        this.Utilities.checkWithinDateRange(
+                            this._db.date.day,
+                            this._db.date.month,
+                            this._seasonConfig[key].timeFrame
+                        )
+                    ) {
+                        this._db.season.name = this._seasonConfig[key].name;
+                        this._db.season.value = key;
+                        this._seasonValues.overrideSeason = this.season;
+                    }
                 }
             }
+        } else {
+            this._seasonValues.overrideSeason = this._seasonNames.includes(
+                this._db.event.season
+            )
+                ? this._seasonConfig[this._db.event.season].value
+                : this.season;
+            this._logger.warning(
+                `[DES] Invalid season override found in event: '${this._db.event.name}' value: '${this._db.event.season}'. Using calendar season.`
+            );
         }
     }
 }

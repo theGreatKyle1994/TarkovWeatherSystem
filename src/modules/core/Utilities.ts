@@ -8,6 +8,10 @@ import type { TimeFrameEntry, TimeStampEntry } from "../../models/calendar";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 
 export default class Utilities {
+    static inRange(lower: number, upper: number, target: number): boolean {
+        return target >= lower && target <= upper;
+    }
+
     static writeDatabase(data: Database, logger: ILogger): void {
         try {
             fs.writeFileSync(

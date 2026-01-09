@@ -61,7 +61,6 @@ export default class ModuleManager {
     public enable(): void {
         this._Calendar.enable();
         this._Season.enable();
-        // TEMP
         Utilities.writeDatabase(this._db, this._logger);
     }
 
