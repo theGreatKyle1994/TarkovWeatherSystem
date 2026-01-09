@@ -66,6 +66,7 @@ export default class ModuleManager {
 
     public update(): void {
         this._Calendar.update();
+        this._Season.update();
         Utilities.writeDatabase(this._db, this._logger);
     }
 }
