@@ -2,6 +2,7 @@
 import Module from "./core/Module";
 import { calendarOrder } from "../models/calendar";
 import type { Database } from "../models/database";
+import type { TimeFrameEntry, TimeStampEntry } from "../models/calendar";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
@@ -11,47 +12,60 @@ export default class CalendarModule extends Module {
         super(db, logger);
     }
 
-    // public cycleDB(): void {
-    //     const monthIndex = this.getMonthIndex();
-    //     const monthChoice =
-    //         monthIndex === calendarOrder.length - 1
-    //             ? calendarOrder[0]
-    //             : calendarOrder[monthIndex + 1];
-    // }
+    public enable(): void {}
 
-    // private checkMonthRange(seasonLayout: SeasonLayoutEntry): boolean {
-    //     // Validate season timeframes
-    //     const monthIndex = this.getMonthIndex() + 1;
-    //     const monthOffset =
-    //         seasonLayout.month.start + seasonLayout.month.end - monthIndex;
+    public update(): void {
+        this._db.date.day++;
+        if (this._db.date.day > 30) {
+            this._db.date.day = 1;
+            this._db.date.month++;
+            if (this._db.date.month > 12) {
+                this._db.date.month = 1;
+                this._db.date.year++;
+            }
+        }
 
-    //     // Determine if current month falls inside season range
-    //     return seasonLayout.month.start > seasonLayout.month.end
-    //         ? monthOffset >= seasonLayout.month.start ||
-    //               monthOffset <= seasonLayout.month.end
-    //         : monthOffset >= seasonLayout.month.start &&
-    //               monthOffset <= seasonLayout.month.end;
-    // }
+        this._db.date.name.numeric = `${this._db.date.month}/${this._db.date.day}/${this._db.date.year}`;
+        this._db.date.name.alpha = `${this.getMonthName()} ${this.getDayName()}, ${
+            this._db.date.year
+        }`;
+    }
 
-    // private checkDayRange(seasonLayout: SeasonLayoutEntry): boolean {
-    //     const dayOffset =
-    //         seasonLayout.day.start + seasonLayout.day.end - this._db.value;
+    private getDayName(): string {
+        let dayName: string = `${this._db.date.day}`;
+        switch (this._db.date.day) {
+            case 1:
+                dayName += "st";
+                break;
+            case 2:
+                dayName += "nd";
+                break;
+            case 3:
+                dayName += "rd";
+                break;
+            default:
+                dayName += "th";
+        }
+        return dayName;
+    }
 
-    //     // Check if current day falls inside season range
-    //     return seasonLayout.day.start > seasonLayout.day.end
-    //         ? dayOffset >= seasonLayout.day.start ||
-    //               dayOffset <= seasonLayout.day.end
-    //         : dayOffset >= seasonLayout.day.start &&
-    //               dayOffset <= seasonLayout.day.end;
-    // }
+    private getMonthName(): string {
+        return this._db.date.month === calendarOrder.length
+            ? calendarOrder[calendarOrder.length - 1]
+            : calendarOrder[this._db.date.month - 1];
+    }
 
-    // private isFinalMonth(seasonLayout: SeasonLayoutEntry): boolean {
-    //     // Determine if current month is last month of the season
-    //     const monthIndex = this.getMonthIndex() + 1;
-    //     return monthIndex === seasonLayout.month.end;
-    // }
+    private isFinalMonth(timeStamp: TimeStampEntry): boolean {
+        return this._db.date.month === timeStamp.end;
+    }
 
-    // private getMonthIndex(): number {
-    //     return calendarOrder.indexOf(this._db.name);
-    // }
+    static checkWithinDateRange(
+        input: number,
+        timeStamp: TimeStampEntry
+    ): boolean {
+        const offset = timeStamp.start + timeStamp.end - input;
+        return timeStamp.start > timeStamp.end
+            ? offset >= timeStamp.start || offset <= timeStamp.end
+            : offset >= timeStamp.start && offset <= timeStamp.end;
+    }
 }

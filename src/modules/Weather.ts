@@ -10,7 +10,7 @@ import {
     loadConfig,
     loadConfigs,
     loadWeights,
-} from "../utilities/utils";
+} from "./core/Utilities";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";

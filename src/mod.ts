@@ -6,16 +6,16 @@ import ModuleManager from "./modules/core/ModuleManager";
 import FikaHandler from "./utilities/fikaHandler";
 
 // SPT
-import type { DependencyContainer } from "tsyringe";
 import { LogTextColor } from "@spt/models/spt/logging/LogTextColor";
+import type { DependencyContainer } from "tsyringe";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { StaticRouterModService } from "@spt/services/mod/staticRouter/StaticRouterModService";
 import type { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
+import type { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 import type { IEndLocalRaidRequestData } from "@spt/models/eft/match/IEndLocalRaidRequestData";
 
 // Fika
 import type { IFikaRaidCreateRequestData } from "@spt/models/fika/routes/raid/create/IFikaRaidCreateRequestData";
-import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 
 class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     private _logger: ILogger;
@@ -27,7 +27,11 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
         this._logger = container.resolve<ILogger>("WinstonLogger");
 
         if (modConfig.enable) {
-            this._ModuleManager = new ModuleManager(container, this._logger);
+            this._ModuleManager = new ModuleManager(
+                container,
+                modConfig,
+                this._logger
+            );
             this._ModuleManager.preSPTConfig();
 
             this._staticRouterModService =
@@ -78,7 +82,10 @@ class DynamicEnvironmentSystem implements IPreSptLoadMod, IPostDBLoadMod {
     }
 
     public postDBLoad(): void {
-        modConfig.enable && this._ModuleManager.postDBConfig();
+        if (modConfig.enable) {
+            this._ModuleManager.postDBConfig();
+            this._ModuleManager.enable();
+        }
     }
 }
 

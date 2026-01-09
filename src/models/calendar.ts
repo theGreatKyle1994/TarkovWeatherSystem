@@ -1,4 +1,4 @@
-export enum CalendarName {
+export enum MonthName {
     JAN = "January",
     FEB = "February",
     MAR = "March",
@@ -13,17 +13,27 @@ export enum CalendarName {
     DEC = "December",
 }
 
+export interface TimeStampEntry {
+    start: number;
+    end: number;
+}
+
+export interface TimeFrameEntry {
+    month: TimeStampEntry;
+    day: TimeStampEntry;
+}
+
 export const calendarOrder: string[] = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
 ];

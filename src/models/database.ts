@@ -1,7 +1,9 @@
 export interface Database {
     date: {
-        name: string;
-        nameForm: string;
+        name: {
+            numeric: string;
+            alpha: string;
+        };
         month: number;
         day: number;
         year: number;

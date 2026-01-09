@@ -1,6 +1,6 @@
 // General
 import type { Events, EventConfig } from "../models/event";
-import { getFolderNames, loadConfig } from "../utilities/utils";
+import { getFolderNames, loadConfig } from "./core/Utilities";
 
 // SPT
 import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEventConfig";

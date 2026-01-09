@@ -1,23 +1,27 @@
 {
     "date": {
-        "name": "June 1st, 2010",
-        "nameForm": "6/1/2010",
+        "name": {
+            "month": "June",
+            "day": "1st",
+            "numeric": "6/1/2010",
+            "alpha": "June 1st, 2010"
+        },
         "month": 6,
         "day": 1,
         "year": 2010
     },
     "event": {
-        "name": "NONE",
+        "name": "none",
         "nameForm": "None",
         "season": "",
         "weather": ""
     },
     "season": {
-        "name": "SUMMER",
+        "name": "summer",
         "nameForm": "Summer"
     },
     "weather": {
-        "name": "SUNNY",
+        "name": "sunny",
         "nameForm": "Sunny"
     }
 }

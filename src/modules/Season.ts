@@ -5,7 +5,7 @@ import seasonWeights from "../../config/season/weights.json";
 import Module from "./core/Module";
 import { seasonDates, seasonOrder } from "../models/seasons";
 import type { SeasonName, SeasonWeights } from "../models/seasons";
-import { chooseWeight } from "../utilities/utils";
+import { chooseWeight } from "./core/Utilities";
 import type { Database } from "../models/database";
 
 // SPT

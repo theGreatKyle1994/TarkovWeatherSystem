@@ -1,17 +1,16 @@
 // Configs
-import modConfig from "../../../config/config.json";
 import db from "../../../config/database/database.json";
 
 // General
-import type { ModConfig } from "../../models/mod";
+import Utilities from "./Utilities";
 import type { Database } from "../../models/database";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 
 export default abstract class Module {
+    protected readonly Utilities = Utilities;
     protected readonly _logger: ILogger;
-    protected readonly _modConfig: ModConfig = modConfig;
     protected _db: Database = db;
 
     constructor(db: Database, logger: ILogger) {
@@ -19,6 +18,7 @@ export default abstract class Module {
         this._logger = logger;
     }
 
-    public initialize(): void {}
-    public enable(): void {}
+    public initialize(config?: any): void {}
+    public abstract enable(): void;
+    public abstract update(): void;
 }
