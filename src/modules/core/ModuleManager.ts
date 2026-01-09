@@ -51,9 +51,7 @@ export default class ModuleManager {
 
     public postDBConfig(): void {
         this._gameConfigs.locations = this._DatabaseService.getLocations();
-
         this._Calendar = new CalendarModule(this._db, this._logger);
-
         this._Season = new SeasonModule(this._db, this._logger);
         this._Season.initialize(this._gameConfigs.weatherSeason);
     }

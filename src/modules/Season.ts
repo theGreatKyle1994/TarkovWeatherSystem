@@ -32,11 +32,11 @@ export default class SeasonModule extends Module {
         this._seasonValues = config;
         this._seasonValues.seasonDates = seasonDates;
         for (let season in this._seasonConfig) this._seasonNames.push(season);
-        if (!this._seasonNames.includes(this._db.season.value))
-            this._db.season.value = "summer";
     }
 
     public enable(): void {
+        if (!this._seasonNames.includes(this._db.season.value))
+            this._db.season.value = "summer";
         this._seasonValues.overrideSeason = this.season;
         this.update();
     }
