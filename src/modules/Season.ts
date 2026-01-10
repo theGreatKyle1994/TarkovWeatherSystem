@@ -67,14 +67,15 @@ export default class SeasonModule extends Module {
                 }
             }
         } else {
-            this._seasonValues.overrideSeason = this._seasonNames.includes(
-                this._db.event.season
-            )
-                ? this._seasonConfig[this._db.event.season].value
-                : this.season;
-            this._logger.warning(
-                `[DES] Invalid season override found in event: '${this._db.event.name}' value: '${this._db.event.season}'. Using calendar season.`
-            );
+            if (this._seasonNames.includes(this._db.event.season)) {
+                this._seasonValues.overrideSeason =
+                    this._seasonConfig[this._db.event.season].value;
+            } else {
+                this._seasonValues.overrideSeason = this.season;
+                this._logger.warning(
+                    `[DES] Invalid season override found in event: '${this._db.event.name}' value: '${this._db.event.season}'. Using calendar season.`
+                );
+            }
         }
     }
 }

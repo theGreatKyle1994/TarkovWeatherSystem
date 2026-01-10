@@ -5,6 +5,7 @@ import db from "../../../config/database/database.json";
 import Utilities from "./Utilities";
 import CalendarModule from "../Calendar";
 import SeasonModule from "../Season";
+import WeatherModule from "../Weather";
 import type { ModConfig } from "../../models/mod";
 import type { GameConfigs } from "../../models/mod";
 import type { Database } from "../../models/database";
@@ -27,6 +28,7 @@ export default class ModuleManager {
     private _gameConfigs: GameConfigs = {};
     private _Calendar: CalendarModule;
     private _Season: SeasonModule;
+    private _Weather: WeatherModule;
 
     constructor(
         container: DependencyContainer,
@@ -53,18 +55,22 @@ export default class ModuleManager {
         this._gameConfigs.locations = this._DatabaseService.getLocations();
         this._Calendar = new CalendarModule(this._db, this._logger);
         this._Season = new SeasonModule(this._db, this._logger);
+        this._Weather = new WeatherModule(this._db, this._logger);
         this._Season.initialize(this._gameConfigs.weatherSeason);
+        this._Weather.initialize(this._gameConfigs.weatherSeason);
     }
 
     public enable(): void {
         this._Calendar.enable();
         this._Season.enable();
+        this._Weather.enable();
         Utilities.writeDatabase(this._db, this._logger);
     }
 
     public update(): void {
         this._Calendar.update();
         this._Season.update();
+        this._Weather.update();
         Utilities.writeDatabase(this._db, this._logger);
     }
 }

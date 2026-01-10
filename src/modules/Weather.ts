@@ -1,81 +1,91 @@
-// // General
-// import Module from "./core/Module";
-// import type { Database } from "../models/database";
-// import type {
-//     WeatherWeightsConfig,
-//     WeatherCustomConfig,
-// } from "../models/weather";
-// import {
-//     chooseWeight,
-//     loadConfig,
-//     loadConfigs,
-//     loadWeights,
-// } from "./core/Utilities";
+// Configs
+import weatherConfig from "../../config/season/weather.json";
+import seasonConfig from "../../config/season/seasons.json";
 
-// // SPT
-// import type { ILogger } from "@spt/models/spt/utils/ILogger";
-// import type {
-//     ISeasonalValues,
-//     IWeatherConfig,
-// } from "@spt/models/spt/config/IWeatherConfig";
+// General
+import Module from "./core/Module";
+import type { Database } from "../models/database";
+import type { WeatherConfig, WeatherConfigEntry } from "../models/weather";
+import type { SeasonConfig } from "../models/seasons";
 
-// export default class WeatherModule extends Module {
-//     private _weatherValues: IWeatherConfig;
-//     private _weatherConfigs: WeatherCustomConfig[] = [];
-//     private _weatherTypes: string[] = [];
-//     private _weatherWeights: WeatherWeightsConfig;
+// SPT
+import type { ILogger } from "@spt/models/spt/utils/ILogger";
+import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
+import type { ISeasonalValues } from "@spt/models/spt/config/IWeatherConfig";
 
-//     constructor(db: Database, logger: ILogger) {
-//         super(db, logger);
-//     }
+export default class WeatherModule extends Module {
+    private _weatherValues: IWeatherConfig;
+    private readonly _weatherConfig: WeatherConfig = weatherConfig;
+    private readonly _seasonConfig: SeasonConfig = seasonConfig;
+    private readonly _weatherNames: string[] = [];
 
-// public setConfig(config: IWeatherConfig): void {
-//     this._weatherValues = config;
+    constructor(db: Database, logger: ILogger) {
+        super(db, logger);
+    }
 
-//     this._weatherWeights = loadWeights(this._logger, "weather/default");
-//     this._weatherConfigs = loadConfigs<WeatherCustomConfig>(
-//         this._logger,
-//         "weather/default",
-//         ["weights.json"]
-//     );
+    private get weather(): ISeasonalValues {
+        return this._weatherConfig[this._db.weather.value].weather;
+    }
 
-//     if (this._db.useCustom) {
-//         const weatherCount = this._weatherConfigs.length;
+    private get weatherWeights(): Record<string, number> {
+        return this._seasonConfig[this._db.season.value].weather;
+    }
 
-//         this._weatherConfigs = loadConfigs<WeatherCustomConfig>(
-//             this._logger,
-//             "weather/custom",
-//             ["weights.json", "example.json", "exampleWeights.json"],
-//             this._weatherConfigs
-//         );
-//         this._weatherWeights = loadWeights(
-//             this._logger,
-//             "weather/custom",
-//             this._weatherWeights
-//         );
-//     }
+    private get weatherEntry(): WeatherConfigEntry {
+        return this._weatherConfig[this._db.weather.value];
+    }
 
-//     for (let { name } of this._weatherConfigs)
-//         this._weatherTypes.push(name);
+    public initialize(config: IWeatherConfig): void {
+        this._weatherValues = config;
+        this._weatherValues.weather.generateWeatherAmountHours = 5;
+        for (let weather in this._weatherConfig)
+            this._weatherNames.push(weather);
+    }
 
-//     this._weatherValues.weather.generateWeatherAmountHours = 1;
-// }
+    public enable(): void {
+        if (!this._weatherNames.includes(this._db.weather.value))
+            this._db.weather.value = "sunny";
+        if (this._db.weather.name !== this.weatherEntry.name)
+            this._db.weather.name = this.weatherEntry.name;
+        this.applyWeather();
+        this.update();
+    }
 
-// public cycleDB(): void {
-//     const weatherChoice = chooseWeight(
-//         this._weatherWeights[this._db.name]
-//     );
-// }
+    public update(): void {
+        if (!this._db.event.weather) {
+            const weights: Record<string, number> = {};
+            for (let key in this.weatherWeights)
+                weights[key] = this.weatherWeights[key];
+            const weatherChoice: string = this.Utilities.chooseWeight(weights);
+            this._db.weather.value = weatherChoice;
+            this._db.weather.name =
+                this._weatherConfig[this._db.weather.value].name;
+            this.applyWeather(this._weatherConfig[weatherChoice].weather);
+        } else {
+            if (this._weatherNames.includes(this._db.event.weather)) {
+                this.applyWeather(
+                    this._weatherConfig[this._db.event.weather].weather
+                );
+            } else {
+                this.applyWeather(this.weather);
+                this._logger.warning(
+                    `[DES] Invalid weather override found in event: '${this._db.event.name}' value: '${this._db.event.weather}'. Using season weather.`
+                );
+            }
+        }
+        this._logger.success(
+            JSON.stringify(this._weatherValues.weather, null, 4)
+        );
+    }
 
-// private applyWeather(newWeather: string): void {
-//     const weatherChoice = this.findWeather(newWeather);
-//     for (let key in this._weatherValues.weather.seasonValues)
-//         this._weatherValues.weather.seasonValues[key] = weatherChoice;
-// }
-
-// private findWeather(target: string): ISeasonalValues {
-//     for (let i = 0; i < this._weatherConfigs.length; i++)
-//         if (this._weatherConfigs[i].name === target)
-//             return this._weatherConfigs[i].weather;
-// }
-// }
+    private applyWeather(
+        weather: ISeasonalValues = this.weatherEntry.weather
+    ): void {
+        this._weatherValues.weather.timePeriod = {
+            values: [this.weatherEntry.changeInterval],
+            weights: [1],
+        };
+        for (let key in this._weatherValues.weather.seasonValues)
+            this._weatherValues.weather.seasonValues[key] = weather;
+    }
+}
