@@ -4,10 +4,12 @@ import seasonConfig from "../../config/season/seasons.json";
 // General
 import Module from "./core/Module";
 import { seasonDates } from "../models/seasons";
+import type { GameConfigs } from "../models/mod";
 import type { SeasonConfig, SeasonConfigEntry } from "../models/seasons";
 import type { Database } from "../models/database";
 
 // SPT
+import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import type { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 
@@ -16,8 +18,8 @@ export default class SeasonModule extends Module {
     private readonly _seasonConfig: SeasonConfig = seasonConfig;
     private readonly _seasonNames: string[] = [];
 
-    constructor(db: Database, logger: ILogger) {
-        super(db, logger);
+    constructor(gameConfigs: GameConfigs, db: Database, logger: ILogger) {
+        super(gameConfigs, db, logger);
     }
 
     private get season(): number {
@@ -28,8 +30,11 @@ export default class SeasonModule extends Module {
         return this._seasonConfig[this._db.season.value];
     }
 
-    public initialize(config: IWeatherConfig): void {
-        this._seasonValues = config;
+    public initialize(): void {
+        this._seasonValues =
+            this._gameConfigs.configs.getConfig<IWeatherConfig>(
+                ConfigTypes.WEATHER
+            );
         this._seasonValues.seasonDates = seasonDates;
         for (let season in this._seasonConfig) this._seasonNames.push(season);
     }

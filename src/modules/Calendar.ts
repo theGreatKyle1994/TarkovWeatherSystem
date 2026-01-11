@@ -1,14 +1,15 @@
 // General
 import Module from "./core/Module";
 import { calendarOrder } from "../models/calendar";
+import type { GameConfigs } from "../models/mod";
 import type { Database } from "../models/database";
 
 // SPT
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
 
 export default class CalendarModule extends Module {
-    constructor(db: Database, logger: ILogger) {
-        super(db, logger);
+    constructor(gameConfigs: GameConfigs, db: Database, logger: ILogger) {
+        super(gameConfigs, db, logger);
     }
 
     public enable(): void {

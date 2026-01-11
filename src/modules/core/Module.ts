@@ -3,6 +3,7 @@ import db from "../../../config/database/database.json";
 
 // General
 import Utilities from "./Utilities";
+import type { GameConfigs } from "../../models/mod";
 import type { Database } from "../../models/database";
 
 // SPT
@@ -12,13 +13,16 @@ export default abstract class Module {
     protected readonly Utilities = Utilities;
     protected readonly _logger: ILogger;
     protected _db: Database = db;
+    protected _gameConfigs: GameConfigs;
 
-    constructor(db: Database, logger: ILogger) {
+    constructor(gameConfigs: GameConfigs, db: Database, logger: ILogger) {
+        this._gameConfigs = gameConfigs;
         this._db = db;
         this._logger = logger;
     }
 
-    public initialize(config?: any): void {}
+    public preInitialize(): void {}
+    public initialize(): void {}
     public abstract enable(): void;
     public abstract update(): void;
 }

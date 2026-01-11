@@ -1,94 +1,57 @@
-// // General
-// import type { Events, EventConfig } from "../models/event";
-// import { getFolderNames, loadConfig } from "./core/Utilities";
+// Configs
+import eventConfig from "../../config/event/events.json";
 
-// // SPT
-// import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEventConfig";
-// import type { ILogger } from "@spt/models/spt/utils/ILogger";
-// import type { ILocations } from "@spt/models/spt/server/ILocations";
+// General
+import Module from "./core/Module";
+import type { GameConfigs } from "../models/mod";
+import type { EventConfig } from "../models/event";
+import type { Database } from "../models/database";
 
-// export default class EventModule {
-//     private _eventNames: string[];
-//     private _events: Events = {};
-//     private _locations: ILocations;
+// SPT
+import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
+import type { ISeasonalEventConfig } from "@spt/models/spt/config/ISeasonalEventConfig";
+import type { ILogger } from "@spt/models/spt/utils/ILogger";
+import type { IGlobals } from "@spt/models/eft/common/IGlobals";
 
-// static preConfig(eventValues: ISeasonalEventConfig, logger: ILogger): void {
-//     // Disable any event detection
-//     eventValues.enableSeasonalEventDetection = false;
+export default class EventModule extends Module {
+    private _eventValues: ISeasonalEventConfig;
+    private _globals: IGlobals;
+    private readonly _eventConfig: EventConfig = eventConfig;
+    private readonly _coreEventNames: string[] = [];
+    private readonly _additiveEventNames: string[] = [];
 
-//     for (let event of eventValues.events) {
-//         // Disable vanilla events
-//         event.enabled = false;
-//         // Allow all events to occur at any time
-//         event.startDay = 1;
-//         event.startMonth = 1;
-//         event.endDay = 31;
-//         event.endMonth = 12;
-//     }
-// }
+    constructor(configs: GameConfigs, db: Database, logger: ILogger) {
+        super(configs, db, logger);
+    }
 
-// public enable(locations: ILocations, logger: ILogger): void {
-//     this._logger = logger;
-//     this._locations = locations;
-// }
+    public preInitialize(): void {
+        this._eventValues = this._gameConfigs.configs.getConfig(
+            ConfigTypes.SEASONAL_EVENT
+        );
 
-// private enableEvents(eventValues: ISeasonalEventConfig): void {
-//     let eventCount = 0;
+        this._eventValues.enableSeasonalEventDetection = false;
+        for (let event of this._eventValues.events) event.enabled = false;
+    }
 
-//     // Get all folder names
-//     let folderNames: string[] = getFolderNames(
-//         this._logger,
-//         "event/default"
-//     );
+    public initialize(): void {
+        this._globals = this._gameConfigs.database.getGlobals();
 
-//     // Grab all default events
-//     this._eventNames = folderNames;
-//     eventCount += this._eventNames.length;
+        for (let event in this._eventConfig.core)
+            this._coreEventNames.push(event);
+        for (let event in this._eventConfig.additive)
+            this._additiveEventNames.push(event);
+    }
 
-//     // Get default events
-//     this.getEvents(folderNames);
-// }
+    public enable(): void {
+        this.update();
+    }
 
-// private getEvents(folderNames: string[], isCustom: boolean = false): void {
-//     for (let folder of folderNames) {
-//         // Simplify loading config syntax
-//         const getConfig = <ConfigType>(subPath: string): ConfigType =>
-//             loadConfig(
-//                 this._logger,
-//                 `event/${
-//                     isCustom ? "custom" : "default"
-//                 }/${folder}/${subPath}`
-//             );
+    public update(): void {
+        // Controls hideout appearance
+        // this._globals.config.EventType = [];
 
-//         // Get event config
-//         const eventConfig = getConfig<EventConfig>("event");
-
-//         // Skip config if it's disabled
-//         if (!eventConfig.enable) continue;
-
-//         const {
-//             useBotAppearances,
-//             useEventGear,
-//             useEventLoot,
-//             useSanta,
-//             useZombies,
-//             useBotHostility,
-//             useSummoningEvent,
-//             useCustomSpawns,
-//         } = eventConfig.settings;
-
-//         // Assign event information to event entry
-//         this._events[folder] = {
-//             config: eventConfig,
-//             bots:
-//                 (useBotAppearances || useEventGear || useEventLoot) &&
-//                 getConfig("bots"),
-//             hostility: useBotHostility && getConfig("hostility"),
-//             summon: useSummoningEvent && getConfig("summon"),
-//             spawns: useCustomSpawns && getConfig("spawns"),
-//             zombies: useZombies && getConfig("zombies"),
-//             santa: useSanta && getConfig("santa"),
-//         };
-//     }
-// }
-// }
+        // this._logger.warning(
+        //     JSON.stringify(this._globals.config.EventType, null, 4)
+        // );
+    }
+}

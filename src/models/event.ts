@@ -1,5 +1,5 @@
 // General
-import type { TimeStampEntry } from "./mod";
+import type { TimeFrameEntry } from "./calendar";
 
 // SPT
 import type { IEquipment } from "@spt/models/eft/common/tables/IBotType";
@@ -8,47 +8,21 @@ import type {
     IBossLocationSpawn,
 } from "@spt/models/eft/common/ILocationBase";
 
-export interface Event {
-    config: EventConfig;
-    bots?: BotConfig;
-    hostility?: HostilityConfig;
-    summon?: SpawnsConfig;
-    spawns?: SpawnsConfig;
-    zombies?: ZombiesConfig;
-    santa?: SantaConfig;
+export interface EventConfigEntry {
+    enabled: boolean;
+    name: string;
+    eventTypes: string[];
+    timeFrame: TimeFrameEntry;
+    forceSeason: string;
+    forceWeather: string;
 }
 
-export type Events = Record<string, Event>;
-
 export interface EventConfig {
-    enable: boolean;
-    name: string;
-    date: {
-        month: TimeStampEntry;
-        day: TimeStampEntry;
+    core: {
+        [key: string]: EventConfigEntry;
     };
-    settings: {
-        useSanta: boolean;
-        useZombies: boolean;
-        useBotHostility: boolean;
-        useBotAppearances: boolean;
-        useEventGear: boolean;
-        useEventLoot: boolean;
-        useCustomSpawns: boolean;
-        useSummoningEvent: boolean;
-        bots: {
-            disableBosses: string[];
-            disableWaves: string[];
-        };
-        hideout: {
-            enableHalloween: boolean;
-            enableChristmas: boolean;
-        };
-        location: {
-            forceSeason: string;
-            forceWeather: string;
-            removeEntryRequirement: string[];
-        };
+    additive: {
+        [key: string]: EventConfigEntry;
     };
 }
 

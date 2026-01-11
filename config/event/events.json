@@ -1,0 +1,74 @@
+{
+    "core": {
+        "aprilFools": {
+            "enabled": true,
+            "name": "April Fools",
+            "eventTypes": ["Halloween", "HalloweenIllumination", "Christmas"],
+            "timeFrame": {
+                "month": {
+                    "start": 4,
+                    "end": 4
+                },
+                "day": {
+                    "start": 1,
+                    "end": 7
+                }
+            },
+            "forceSeason": "",
+            "forceWeather": ""
+        },
+        "halloween": {
+            "enabled": true,
+            "name": "Halloween",
+            "eventTypes": ["Halloween", "HalloweenIllumination"],
+            "timeFrame": {
+                "month": {
+                    "start": 10,
+                    "end": 11
+                },
+                "day": {
+                    "start": 1,
+                    "end": 15
+                }
+            },
+            "forceSeason": "",
+            "forceWeather": ""
+        },
+        "xmas": {
+            "enabled": true,
+            "name": "Xmas",
+            "eventTypes": ["Christmas"],
+            "timeFrame": {
+                "month": {
+                    "start": 11,
+                    "end": 12
+                },
+                "day": {
+                    "start": 16,
+                    "end": 25
+                }
+            },
+            "forceSeason": "",
+            "forceWeather": ""
+        }
+    },
+    "additive": {
+        "zombies": {
+            "enabled": true,
+            "name": "Zombies",
+            "eventTypes": [],
+            "timeFrame": {
+                "month": {
+                    "start": 1,
+                    "end": 12
+                },
+                "day": {
+                    "start": 1,
+                    "end": 30
+                }
+            },
+            "forceSeason": "",
+            "forceWeather": ""
+        }
+    }
+}
